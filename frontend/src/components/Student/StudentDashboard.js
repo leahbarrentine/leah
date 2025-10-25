@@ -130,6 +130,7 @@ function StudentDashboard({ userId, onLogout }) {
     const saved = localStorage.getItem(`resolvedFeedback_${userId}`);
     return saved ? JSON.parse(saved) : [];
   });
+  const [feedbackModal, setFeedbackModal] = useState(null); // { feedback: msg, index: number }
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -517,18 +518,8 @@ function StudentDashboard({ userId, onLogout }) {
                             <button 
                               className="feedback-action-btn take-action-btn"
                               onClick={() => {
-                                markFeedbackAsResolved(index);
-                                if (assignmentMatch) {
-                                  // Open the assignment submission window
-                                  handleWorkOnAssignment(assignmentMatch.assignment);
-                                } else {
-                                  // Navigate to messages to reply
-                                  setActiveTab('messages');
-                                  sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
-                                    id: msg.teacher_id,
-                                    name: msg.teacher_name
-                                  }));
-                                }
+                                // Show feedback modal
+                                setFeedbackModal({ feedback: msg, index });
                               }}
                             >
                               Take Action
@@ -865,6 +856,41 @@ function StudentDashboard({ userId, onLogout }) {
 
       {activeTab === 'tips' && (
         <Tips />
+      )}
+
+      {/* Feedback Modal */}
+      {feedbackModal && (
+        <div className="modal-overlay" onClick={() => setFeedbackModal(null)}>
+          <div className="modal-content feedback-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Teacher Feedback</h3>
+            </div>
+            
+            <div className="feedback-modal-body">
+              <div className="feedback-modal-from">
+                <strong>From:</strong> {feedbackModal.feedback.teacher_name}
+              </div>
+              <div className="feedback-modal-date">
+                <strong>Date:</strong> {new Date(feedbackModal.feedback.created_at).toLocaleDateString()}
+              </div>
+              <div className="feedback-modal-content">
+                <p>{feedbackModal.feedback.content}</p>
+              </div>
+            </div>
+            
+            <div className="modal-actions">
+              <button 
+                className="button button-primary"
+                onClick={() => {
+                  markFeedbackAsResolved(feedbackModal.index);
+                  setFeedbackModal(null);
+                }}
+              >
+                Feedback Received
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Assignment Work Modal */}

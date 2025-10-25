@@ -1139,6 +1139,43 @@
   box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
 }
 
+/* Feedback Modal */
+.feedback-modal {
+  max-width: 600px;
+}
+
+.feedback-modal-body {
+  margin: var(--space-lg) 0;
+}
+
+.feedback-modal-from,
+.feedback-modal-date {
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.feedback-modal-from strong,
+.feedback-modal-date strong {
+  color: var(--text-primary);
+  margin-right: var(--space-xs);
+}
+
+.feedback-modal-content {
+  margin-top: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary-blue);
+}
+
+.feedback-modal-content p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
 /* Assignment Work Modal */
 .modal-overlay {
   position: fixed;
