@@ -288,6 +288,7 @@
 
 .quote-alert-row .motivational-card {
   grid-column: auto;
+  min-height: 120px;
 }
 
 .quote-alert-row .alert {
@@ -295,6 +296,11 @@
   align-items: center;
   gap: var(--space-md);
   border-radius: var(--radius-lg);
+  background: var(--white);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid var(--warning-yellow);
+  min-height: 120px;
 }
 
 .quote-alert-row .alert .alert-icon {
