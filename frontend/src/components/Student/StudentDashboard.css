@@ -19,6 +19,7 @@
   gap: var(--space-lg);
   animation: slideUp 0.6s ease;
   grid-column: 1 / -1;
+  min-height: 120px;
 }
 
 .quote-icon {
@@ -289,18 +290,20 @@
 .quote-alert-row .motivational-card {
   grid-column: auto;
   min-height: 120px;
+  padding: var(--space-2xl);
 }
 
 .quote-alert-row .alert {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-lg);
   border-radius: var(--radius-lg);
   background: var(--white);
   padding: var(--space-2xl);
   box-shadow: var(--shadow-lg);
   border-left: 4px solid var(--warning-yellow);
   min-height: 120px;
+  color: black;
 }
 
 .quote-alert-row .alert .alert-icon {
@@ -460,9 +463,9 @@
 }
 
 .assignments-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
 }
 
 .assignment-item {
