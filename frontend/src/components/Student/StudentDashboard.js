@@ -533,7 +533,6 @@ function StudentDashboard({ userId, onLogout }) {
                                 <button 
                                   className="feedback-action-btn see-more-btn"
                                   onClick={() => {
-                                    markFeedbackAsResolved(origIndex);
                                     setActiveTab('messages');
                                     // Store teacher info for Messaging component to use
                                     sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
@@ -547,14 +546,8 @@ function StudentDashboard({ userId, onLogout }) {
                                 <button 
                                   className="feedback-action-btn take-action-btn"
                                   onClick={() => {
-                                    if (assignmentMatch) {
-                                      // If feedback mentions specific assignment, open submission window
-                                      markFeedbackAsResolved(origIndex);
-                                      handleWorkOnAssignment(assignmentMatch.assignment);
-                                    } else {
-                                      // If it's general feedback, show acknowledgment modal
-                                      setFeedbackModal({ feedback: msg, index: origIndex });
-                                    }
+                                    // Always show acknowledgment modal for general feedback
+                                    setFeedbackModal({ feedback: msg, index: origIndex });
                                   }}
                                 >
                                   Take Action
@@ -932,37 +925,35 @@ function StudentDashboard({ userId, onLogout }) {
       )}
 
       {/* Feedback Modal */}
-      {feedbackModal && (
-        <div className="modal-overlay" onClick={() => setFeedbackModal(null)}>
-          <div className="modal-content feedback-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Teacher Feedback</h3>
-            </div>
-            
-            <div className="feedback-modal-body">
-              <div className="feedback-modal-from">
-                <strong>From:</strong> {feedbackModal.feedback.teacher_name}
+        {feedbackModal && (
+          <div className="modal-overlay" onClick={() => setFeedbackModal(null)}>
+            <div className="modal-content feedback-modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Acknowledge Feedback</h3>
+              <div className="feedback-modal-body">
+                <div className="feedback-modal-from">
+                  <strong>From:</strong> {feedbackModal.feedback.teacher_name}
+                </div>
+                <div className="feedback-modal-date">
+                  <strong>Date:</strong> {new Date(feedbackModal.feedback.created_at).toLocaleDateString()}
+                </div>
+                <div className="feedback-modal-content">
+                  <p>{feedbackModal.feedback.content}</p>
+                </div>
               </div>
-              <div className="feedback-modal-date">
-                <strong>Date:</strong> {new Date(feedbackModal.feedback.created_at).toLocaleDateString()}
+              <div className="modal-actions">
+                <button 
+                  className="modal-btn primary-btn"
+                  onClick={() => {
+                    markFeedbackAsResolved(feedbackModal.index);
+                    setFeedbackModal(null);
+                  }}
+                >
+                  Feedback Received
+                </button>
               </div>
-              <div className="feedback-modal-content">
-                <p>{feedbackModal.feedback.content}</p>
-              </div>
-            </div>
-            
-            <div className="modal-actions">
-              <button 
-                className="button button-primary"
-                onClick={() => {
-                  markFeedbackAsResolved(feedbackModal.index);
-                  setFeedbackModal(null);
-                }}
-              >
-                Feedback Received
-              </button>
             </div>
           </div>
+        )}
         </div>
       )}
 
