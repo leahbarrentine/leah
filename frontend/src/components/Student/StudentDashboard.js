@@ -138,6 +138,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [showClosedFeedback, setShowClosedFeedback] = useState(false);
   const [expandedFeedback, setExpandedFeedback] = useState([]); // Track which feedback items are expanded
   const [feedbackModal, setFeedbackModal] = useState(null); // { feedback: msg, index: number }
+  const [conversations, setConversations] = useState([]);
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -158,7 +159,17 @@ function StudentDashboard({ userId, onLogout }) {
   useEffect(() => {
     loadDashboard();
     loadPerformance();
+    loadConversations();
   }, [userId]);
+
+  const loadConversations = async () => {
+    try {
+      const response = await messageAPI.getConversations(userId, 'student');
+      setConversations(response.data);
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+    }
+  };
   
   // Save resolved feedback to localStorage whenever it changes
   useEffect(() => {
@@ -347,6 +358,14 @@ function StudentDashboard({ userId, onLogout }) {
     }
   };
 
+  // Calculate unread message count
+  const unreadMessageCount = conversations.reduce((total, conv) => {
+    const incomingUnread = conv.messages.filter(m => 
+      !m.read && m.recipient_id === userId && m.recipient_type === 'student'
+    ).length;
+    return total + incomingUnread;
+  }, 0);
+
   return (
     <>
       <Navigation 
@@ -355,6 +374,7 @@ function StudentDashboard({ userId, onLogout }) {
         onLogout={onLogout}
         userType="student"
         userName={student.name}
+        messageCount={unreadMessageCount}
       />
       <div className="student-dashboard">
 

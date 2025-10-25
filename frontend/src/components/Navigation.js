@@ -1,7 +1,7 @@
 import React from 'react';
 import './Navigation.css';
 
-function Navigation({ activeTab, onTabChange, onLogout, userType, userName }) {
+function Navigation({ activeTab, onTabChange, onLogout, userType, userName, gradingCount = 0, messageCount = 0 }) {
   return (
     <nav className="navigation-wrapper">
       {/* Top bar - Dark blue with branding */}
@@ -42,6 +42,9 @@ function Navigation({ activeTab, onTabChange, onLogout, userType, userName }) {
                   onClick={() => onTabChange('grading')}
                 >
                   Grading Window
+                  {gradingCount > 0 && (
+                    <span className="nav-badge grading-badge">{gradingCount}</span>
+                  )}
                 </button>
                 <button
                   className={`nav-bubble ${activeTab === 'performance' ? 'active' : ''}`}
@@ -56,6 +59,9 @@ function Navigation({ activeTab, onTabChange, onLogout, userType, userName }) {
               onClick={() => onTabChange('messages')}
             >
               Messages
+              {messageCount > 0 && (
+                <span className="nav-badge message-badge">{messageCount}</span>
+              )}
             </button>
             {userType === 'student' && (
               <button

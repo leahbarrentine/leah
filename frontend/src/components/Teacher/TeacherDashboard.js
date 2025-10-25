@@ -32,12 +32,23 @@ function TeacherDashboard({ userId, onLogout }) {
   const [reminderModal, setReminderModal] = useState(null); // { student, assignment, dueDate }
   const [gradingFilter, setGradingFilter] = useState('all'); // 'all' or 'assignment'
   const [selectedAssignmentFilter, setSelectedAssignmentFilter] = useState(''); // specific assignment title
+  const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
     loadDashboard();
     loadAllStudents();
     loadGradingQueue();
+    loadConversations();
   }, [userId]);
+
+  const loadConversations = async () => {
+    try {
+      const response = await messageAPI.getConversations(userId, 'teacher');
+      setConversations(response.data);
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+    }
+  };
 
   const loadDashboard = async () => {
     try {
@@ -291,6 +302,15 @@ function TeacherDashboard({ userId, onLogout }) {
     return `${diffDays} days`;
   };
 
+  // Calculate notification counts
+  const ungradedCount = gradingQueue.length;
+  const unreadMessageCount = conversations.reduce((total, conv) => {
+    const incomingUnread = conv.messages.filter(m => 
+      !m.read && m.recipient_id === userId && m.recipient_type === 'teacher'
+    ).length;
+    return total + incomingUnread;
+  }, 0);
+
   return (
     <>
       <Navigation 
@@ -299,6 +319,8 @@ function TeacherDashboard({ userId, onLogout }) {
         onLogout={onLogout}
         userType="teacher"
         userName={teacher.name}
+        gradingCount={ungradedCount}
+        messageCount={unreadMessageCount}
       />
       <div className="teacher-dashboard">
         <div className="dashboard-header">
