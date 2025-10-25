@@ -369,9 +369,12 @@ function StudentDashboard({ userId, onLogout }) {
               <p>Based on historical data, many students found these upcoming assignments challenging:</p>
               <div className="challenging-assignments-list">
                 {prediction.at_risk_subjects.map((subject, idx) => (
-                  <div key={idx} className="challenging-assignment-card">
+                  <div key={idx} className={`challenging-assignment-card subject-border-${subject.subject.toLowerCase().replace(/\s+/g, '-')}`}>
                     <div className="challenging-assignment-header">
                       <strong className="challenging-assignment-title">{subject.assignment}</strong>
+                      <span className={`subject-bubble subject-${subject.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {subject.subject}
+                      </span>
                     </div>
                     <p className="challenging-assignment-stat">
                       {(subject.stuck_percentage * 100).toFixed(0)}% of students struggled with this in the past

@@ -774,9 +774,44 @@
   padding: var(--space-lg);
   background: var(--white);
   border-radius: var(--radius-md);
-  border-left: 4px solid var(--warning-amber);
+  border-left: 4px solid var(--neutral-300);
   transition: all var(--transition-base);
   box-shadow: var(--shadow-sm);
+}
+
+/* Subject-based border colors for challenging assignments */
+.challenging-assignment-card.subject-border-mathematics,
+.challenging-assignment-card.subject-border-math {
+  border-left-color: #1e40af;
+}
+
+.challenging-assignment-card.subject-border-science {
+  border-left-color: #15803d;
+}
+
+.challenging-assignment-card.subject-border-english,
+.challenging-assignment-card.subject-border-literature {
+  border-left-color: #6b21a8;
+}
+
+.challenging-assignment-card.subject-border-history,
+.challenging-assignment-card.subject-border-social-studies {
+  border-left-color: #9a3412;
+}
+
+.challenging-assignment-card.subject-border-art,
+.challenging-assignment-card.subject-border-music {
+  border-left-color: #9f1239;
+}
+
+.challenging-assignment-card.subject-border-physical-education,
+.challenging-assignment-card.subject-border-pe {
+  border-left-color: #991b1b;
+}
+
+.challenging-assignment-card.subject-border-computer-science,
+.challenging-assignment-card.subject-border-technology {
+  border-left-color: #0e7490;
 }
 
 .challenging-assignment-card:hover {
@@ -785,6 +820,10 @@
 }
 
 .challenging-assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
   margin-bottom: var(--space-sm);
 }
 
