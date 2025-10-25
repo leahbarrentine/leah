@@ -573,8 +573,20 @@ function StudentDashboard({ userId, onLogout }) {
                                 <button 
                                   className="feedback-action-btn take-action-btn"
                                   onClick={() => {
-                                    // Always show acknowledgment modal for general feedback
-                                    setFeedbackModal({ feedback: msg, index: origIndex });
+                                    // Check if feedback mentions a specific assignment
+                                    const mentionedAssignment = assignments_with_grades.find(item => 
+                                      msg.content.includes(item.assignment.title)
+                                    );
+                                    
+                                    if (mentionedAssignment) {
+                                      // Open assignment submission window
+                                      handleWorkOnAssignment(mentionedAssignment.assignment);
+                                      // Mark as resolved since they're taking action
+                                      markFeedbackAsResolved(origIndex);
+                                    } else {
+                                      // Show acknowledgment modal for general feedback
+                                      setFeedbackModal({ feedback: msg, index: origIndex });
+                                    }
                                   }}
                                 >
                                   Take Action
