@@ -40,6 +40,13 @@ function TeacherDashboard({ userId, onLogout }) {
     loadGradingQueue();
     loadConversations();
   }, [userId]);
+  
+  // Reload conversations when switching to messages tab
+  useEffect(() => {
+    if (activeTab === 'messages') {
+      loadConversations();
+    }
+  }, [activeTab]);
 
   const loadConversations = async () => {
     try {
@@ -302,8 +309,11 @@ function TeacherDashboard({ userId, onLogout }) {
     return `${diffDays} days`;
   };
 
-  // Calculate notification counts
-  const ungradedCount = gradingQueue.length;
+  // Calculate notification counts - only count submitted but ungraded assignments
+  const ungradedCount = at_risk_students.flatMap(({ student, prediction }) => 
+    prediction.at_risk_subjects
+      .filter(subject => !subject.grade || subject.grade === null)
+  ).length;
   const unreadMessageCount = conversations.reduce((total, conv) => {
     const incomingUnread = conv.messages.filter(m => 
       !m.read && m.recipient_id === userId && m.recipient_type === 'teacher'

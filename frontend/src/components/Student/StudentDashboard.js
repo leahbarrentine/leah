@@ -161,6 +161,13 @@ function StudentDashboard({ userId, onLogout }) {
     loadPerformance();
     loadConversations();
   }, [userId]);
+  
+  // Reload conversations when switching to messages tab
+  useEffect(() => {
+    if (activeTab === 'messages') {
+      loadConversations();
+    }
+  }, [activeTab]);
 
   const loadConversations = async () => {
     try {
@@ -548,21 +555,21 @@ function StudentDashboard({ userId, onLogout }) {
                           </div>
                           <p className="feedback-content">{msg.content}</p>
                           <div className="feedback-actions-row">
-                            {!isResolved ? (
-                              <div className="feedback-actions">
-                                <button 
-                                  className="feedback-action-btn see-more-btn"
-                                  onClick={() => {
-                                    setActiveTab('messages');
-                                    // Store teacher info for Messaging component to use
-                                    sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
-                                      id: msg.teacher_id,
-                                      name: msg.teacher_name
-                                    }));
-                                  }}
-                                >
-                                  See More
-                                </button>
+                            <div className="feedback-actions">
+                              <button 
+                                className="feedback-action-btn see-more-btn"
+                                onClick={() => {
+                                  setActiveTab('messages');
+                                  // Store teacher info for Messaging component to use
+                                  sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
+                                    id: msg.teacher_id,
+                                    name: msg.teacher_name
+                                  }));
+                                }}
+                              >
+                                See More
+                              </button>
+                              {!isResolved ? (
                                 <button 
                                   className="feedback-action-btn take-action-btn"
                                   onClick={() => {
@@ -572,15 +579,15 @@ function StudentDashboard({ userId, onLogout }) {
                                 >
                                   Take Action
                                 </button>
-                              </div>
-                            ) : (
-                              <button 
-                                className="close-feedback-btn"
-                                onClick={() => closeFeedback(origIndex)}
-                              >
-                                Close
-                              </button>
-                            )}
+                              ) : (
+                                <button 
+                                  className="close-feedback-btn"
+                                  onClick={() => closeFeedback(origIndex)}
+                                >
+                                  Close
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       );

@@ -73,7 +73,21 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
       });
 
       setNewMessage('');
-      loadConversations();
+      
+      // Reload conversations to get the updated data
+      const response = await messageAPI.getConversations(userId, userType);
+      setConversations(response.data);
+      
+      // Update the selected conversation with the new message
+      if (selectedConversation) {
+        const updatedConv = response.data.find(c => 
+          c.partner_id === selectedConversation.partner_id && 
+          c.partner_type === selectedConversation.partner_type
+        );
+        if (updatedConv) {
+          setSelectedConversation(updatedConv);
+        }
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     }
