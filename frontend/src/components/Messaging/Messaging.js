@@ -122,9 +122,14 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
       }
     }
     
-    // Notify parent component to update badge count
-    if (unreadMessages.length > 0 && onMessagesRead) {
-      onMessagesRead();
+    // Reload conversations to update badges immediately
+    if (unreadMessages.length > 0) {
+      await loadConversations();
+      
+      // Notify parent component to update toolbar badge count
+      if (onMessagesRead) {
+        onMessagesRead();
+      }
     }
   };
 
