@@ -762,6 +762,44 @@
   margin-top: var(--space-xs);
 }
 
+/* Challenging Assignments Styling */
+.challenging-assignments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.challenging-assignment-card {
+  padding: var(--space-lg);
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--warning-amber);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.challenging-assignment-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.challenging-assignment-header {
+  margin-bottom: var(--space-sm);
+}
+
+.challenging-assignment-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.challenging-assignment-stat {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .student-dashboard {
     padding: var(--space-lg) var(--space-md);

@@ -367,11 +367,15 @@ function StudentDashboard({ userId, onLogout }) {
             <div className="card">
               <h3>Challenging Assignments Ahead</h3>
               <p>Based on historical data, many students found these upcoming assignments challenging:</p>
-              <div className="at-risk-list">
+              <div className="challenging-assignments-list">
                 {prediction.at_risk_subjects.map((subject, idx) => (
-                  <div key={idx} className="at-risk-item">
-                    <strong>{subject.assignment}</strong>
-                    <p>{(subject.stuck_percentage * 100).toFixed(0)}% of students struggled with this in the past</p>
+                  <div key={idx} className="challenging-assignment-card">
+                    <div className="challenging-assignment-header">
+                      <strong className="challenging-assignment-title">{subject.assignment}</strong>
+                    </div>
+                    <p className="challenging-assignment-stat">
+                      {(subject.stuck_percentage * 100).toFixed(0)}% of students struggled with this in the past
+                    </p>
                   </div>
                 ))}
               </div>
