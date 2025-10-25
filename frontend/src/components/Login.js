@@ -69,6 +69,7 @@ function Login({ onLogin }) {
       
       <div className="login-card">
         <h2>2 Steps Ahead</h2>
+        <p className="login-slogan">Stay Ahead of Your Academic Journey</p>
         <p className="login-subtitle">Select your account to continue</p>
 
         <div className="form-group">

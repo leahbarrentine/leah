@@ -221,6 +221,16 @@
   line-height: var(--line-height-tight);
 }
 
+.login-slogan {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: #4A90E2;
+  text-align: center;
+  margin-bottom: var(--space-md);
+  line-height: var(--line-height-normal);
+  font-style: italic;
+}
+
 .login-subtitle {
   font-size: var(--font-size-base);
   color: var(--text-secondary);
