@@ -1003,7 +1003,7 @@ function TeacherDashboard({ userId, onLogout }) {
                       return (
                         <div key={index} className="grading-card-item">
                           <div className="grading-card-header">
-                            <h4>{submission.student.name}</h4>
+                            <h4>{submission.assignment.title}: {submission.student.name}</h4>
                           </div>
                           <div className="grading-card-body">
                             <div className="submitted-info">
