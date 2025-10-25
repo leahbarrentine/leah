@@ -118,6 +118,9 @@ function StudentDashboard({ userId, onLogout }) {
   const [assignmentSort, setAssignmentSort] = useState('dueDate'); // 'dueDate'
   const [todoSort, setTodoSort] = useState('dueDate'); // 'dueDate'
   const [quoteKey, setQuoteKey] = useState(0); // For forcing quote regeneration
+  const [workingAssignment, setWorkingAssignment] = useState(null); // Assignment being worked on
+  const [assignmentContent, setAssignmentContent] = useState(''); // Work content
+  const [submissionStatuses, setSubmissionStatuses] = useState({}); // Track submission status for each assignment
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -144,6 +147,21 @@ function StudentDashboard({ userId, onLogout }) {
     try {
       const response = await studentAPI.getDashboard(userId);
       setDashboard(response.data);
+      
+      // Load submission statuses for all assignments
+      const statuses = {};
+      for (const item of response.data.assignments_with_grades) {
+        try {
+          const subResponse = await studentAPI.getSubmission(item.assignment.id, userId);
+          statuses[item.assignment.id] = {
+            status: subResponse.data.submission_status || 'not_started',
+            content: subResponse.data.submission_content || ''
+          };
+        } catch (error) {
+          console.error(`Error loading submission for assignment ${item.assignment.id}:`, error);
+        }
+      }
+      setSubmissionStatuses(statuses);
     } catch (error) {
       console.error('Error loading dashboard:', error);
     }
@@ -156,6 +174,74 @@ function StudentDashboard({ userId, onLogout }) {
       setPerformance(response.data);
     } catch (error) {
       console.error('Error loading performance:', error);
+    }
+  };
+
+  const handleWorkOnAssignment = async (assignment) => {
+    const status = submissionStatuses[assignment.id];
+    setWorkingAssignment(assignment);
+    setAssignmentContent(status?.content || '');
+  };
+
+  const handleSaveDraft = async () => {
+    if (!workingAssignment) return;
+    
+    try {
+      await studentAPI.saveDraft(workingAssignment.id, {
+        student_id: userId,
+        content: assignmentContent
+      });
+      
+      // Update submission status
+      setSubmissionStatuses({
+        ...submissionStatuses,
+        [workingAssignment.id]: {
+          status: 'in_progress',
+          content: assignmentContent
+        }
+      });
+      
+      alert('Draft saved successfully!');
+    } catch (error) {
+      console.error('Error saving draft:', error);
+      alert('Failed to save draft. Please try again.');
+    }
+  };
+
+  const handleSubmitAssignment = async () => {
+    if (!workingAssignment) return;
+    
+    if (!assignmentContent.trim()) {
+      alert('Please add some work before submitting');
+      return;
+    }
+    
+    if (!window.confirm('Are you sure you want to submit this assignment? You cannot edit it after submission.')) {
+      return;
+    }
+    
+    try {
+      await studentAPI.submitAssignment(workingAssignment.id, {
+        student_id: userId,
+        content: assignmentContent
+      });
+      
+      // Update submission status
+      setSubmissionStatuses({
+        ...submissionStatuses,
+        [workingAssignment.id]: {
+          status: 'submitted',
+          content: assignmentContent
+        }
+      });
+      
+      alert('Assignment submitted successfully!');
+      setWorkingAssignment(null);
+      setAssignmentContent('');
+      loadDashboard(); // Reload to update grades
+    } catch (error) {
+      console.error('Error submitting assignment:', error);
+      alert('Failed to submit assignment. Please try again.');
     }
   };
 
@@ -435,6 +521,8 @@ function StudentDashboard({ userId, onLogout }) {
               const score = item.grade?.score;
               const performanceClass = getPerformanceClass(score);
               const scoreClass = getScoreClass(score);
+              const submissionStatus = submissionStatuses[item.assignment.id];
+              const status = submissionStatus?.status || 'not_started';
               
               return (
                 <div key={item.assignment.id} className={`assignment-item ${performanceClass}`}>
@@ -453,13 +541,21 @@ function StudentDashboard({ userId, onLogout }) {
                   </div>
                   <div className="assignment-meta">
                     <span>Due: {new Date(item.assignment.due_date).toLocaleDateString()}</span>
-                    {item.grade && (
-                      <span>Status: {item.grade.completion_status}</span>
-                    )}
-                    {!item.grade && (
-                      <span>Status: Not submitted</span>
-                    )}
+                    <span>Status: {
+                      status === 'graded' ? 'Graded' :
+                      status === 'submitted' ? 'Submitted' :
+                      status === 'in_progress' ? 'Draft saved' :
+                      'Not started'
+                    }</span>
                   </div>
+                  {status !== 'submitted' && status !== 'graded' && (
+                    <button 
+                      className="work-button"
+                      onClick={() => handleWorkOnAssignment(item.assignment)}
+                    >
+                      {status === 'in_progress' ? 'Continue Working' : 'Work on Assignment'}
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -473,6 +569,56 @@ function StudentDashboard({ userId, onLogout }) {
 
       {activeTab === 'tips' && (
         <Tips />
+      )}
+
+      {/* Assignment Work Modal */}
+      {workingAssignment && (
+        <div className="modal-overlay" onClick={() => {
+          if (window.confirm('Close without saving? Any unsaved changes will be lost.')) {
+            setWorkingAssignment(null);
+            setAssignmentContent('');
+          }
+        }}>
+          <div className="modal-content assignment-work-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{workingAssignment.title}</h3>
+              <span className={`subject-bubble subject-${workingAssignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                {workingAssignment.subject}
+              </span>
+            </div>
+            
+            <div className="assignment-work-details">
+              <p><strong>Description:</strong> {workingAssignment.description || 'No description provided'}</p>
+              <p><strong>Due:</strong> {new Date(workingAssignment.due_date).toLocaleDateString()}</p>
+              <p className="work-instruction">Complete your work below. You can save a draft and return later, or submit when finished.</p>
+            </div>
+            
+            <textarea
+              className="assignment-work-textarea"
+              placeholder="Type your work here..."
+              value={assignmentContent}
+              onChange={(e) => setAssignmentContent(e.target.value)}
+              rows={15}
+            />
+            
+            <div className="modal-actions">
+              <button className="button button-secondary" onClick={handleSaveDraft}>
+                Save Draft
+              </button>
+              <button className="button button-primary" onClick={handleSubmitAssignment}>
+                Turn In
+              </button>
+              <button className="button button-tertiary" onClick={() => {
+                if (window.confirm('Close without saving? Any unsaved changes will be lost.')) {
+                  setWorkingAssignment(null);
+                  setAssignmentContent('');
+                }
+              }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
     </>

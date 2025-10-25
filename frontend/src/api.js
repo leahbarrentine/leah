@@ -14,12 +14,17 @@ export const studentAPI = {
   getPerformance: (studentId) => api.get(`/students/${studentId}/performance`),
   getGrades: (studentId) => api.get(`/students/${studentId}/grades`),
   getPrediction: (studentId) => api.get(`/predictions/${studentId}`),
+  saveDraft: (assignmentId, data) => api.post(`/assignments/${assignmentId}/save-draft`, data),
+  submitAssignment: (assignmentId, data) => api.post(`/assignments/${assignmentId}/submit`, data),
+  getSubmission: (assignmentId, studentId) => api.get(`/assignments/${assignmentId}/submission/${studentId}`)
 };
 
 export const teacherAPI = {
   getDashboard: (teacherId) => api.get(`/teachers/${teacherId}/dashboard`),
   getStudents: (teacherId) => api.get(`/teachers/${teacherId}/students`),
-  getAtRiskStudents: (teacherId) => api.get(`/predictions/at-risk/${teacherId}`),
+  getGradingQueue: (teacherId) => api.get(`/teachers/${teacherId}/grading-queue`),
+  gradeSubmission: (gradeId, data) => api.post(`/grades/${gradeId}/grade`, data),
+  getAtRiskStudents: (teacherId) => api.get(`/predictions/at-risk/${teacherId}`)
 };
 
 export const messageAPI = {

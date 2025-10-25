@@ -34,12 +34,20 @@ function Navigation({ activeTab, onTabChange, onLogout, userType, userName }) {
               {userType === 'teacher' ? 'Assignments to Grade' : 'Assignments'}
             </button>
             {userType === 'teacher' && (
-              <button
-                className={`nav-bubble ${activeTab === 'performance' ? 'active' : ''}`}
-                onClick={() => onTabChange('performance')}
-              >
-                Performance Overviews
-              </button>
+              <>
+                <button
+                  className={`nav-bubble ${activeTab === 'grading' ? 'active' : ''}`}
+                  onClick={() => onTabChange('grading')}
+                >
+                  Grading Window
+                </button>
+                <button
+                  className={`nav-bubble ${activeTab === 'performance' ? 'active' : ''}`}
+                  onClick={() => onTabChange('performance')}
+                >
+                  Performance Overviews
+                </button>
+              </>
             )}
             <button
               className={`nav-bubble ${activeTab === 'messages' ? 'active' : ''}`}

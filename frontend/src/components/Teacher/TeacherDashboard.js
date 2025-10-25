@@ -24,10 +24,14 @@ function TeacherDashboard({ userId, onLogout }) {
     medium: false,
     low: false
   });
+  const [gradingQueue, setGradingQueue] = useState([]);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [gradeInput, setGradeInput] = useState('');
 
   useEffect(() => {
     loadDashboard();
     loadAllStudents();
+    loadGradingQueue();
   }, [userId]);
 
   const loadDashboard = async () => {
@@ -73,6 +77,39 @@ function TeacherDashboard({ userId, onLogout }) {
       setAllStudentsPerformance(performanceData);
     } catch (error) {
       console.error('Error loading all students:', error);
+    }
+  };
+
+  const loadGradingQueue = async () => {
+    try {
+      const response = await teacherAPI.getGradingQueue(userId);
+      setGradingQueue(response.data);
+    } catch (error) {
+      console.error('Error loading grading queue:', error);
+    }
+  };
+
+  const handleGradeSubmission = async () => {
+    if (!selectedSubmission || !gradeInput) {
+      alert('Please enter a grade');
+      return;
+    }
+
+    const score = parseFloat(gradeInput);
+    if (isNaN(score) || score < 0 || score > 100) {
+      alert('Please enter a valid grade between 0 and 100');
+      return;
+    }
+
+    try {
+      await teacherAPI.gradeSubmission(selectedSubmission.grade.id, { score });
+      alert('Grade submitted successfully!');
+      setSelectedSubmission(null);
+      setGradeInput('');
+      loadGradingQueue(); // Reload the queue
+    } catch (error) {
+      console.error('Error submitting grade:', error);
+      alert('Failed to submit grade. Please try again.');
     }
   };
 
@@ -764,6 +801,107 @@ function TeacherDashboard({ userId, onLogout }) {
                 </div>
               );
               })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'grading' && (
+        <div className="grading-window-section">
+          <h2>Grading Window</h2>
+          <p className="section-description">Review and grade submitted student work</p>
+          
+          {gradingQueue.length === 0 ? (
+            <div className="empty-state">
+              <p>No submissions to grade at this time. Great job staying on top of grading!</p>
+            </div>
+          ) : selectedSubmission ? (
+            <div className="grading-interface">
+              <button className="back-button" onClick={() => setSelectedSubmission(null)}>
+                ← Back to Queue
+              </button>
+              
+              <div className="grading-card">
+                <div className="grading-header">
+                  <div>
+                    <h3>{selectedSubmission.assignment.title}</h3>
+                    <p className="assignment-subject">{selectedSubmission.assignment.subject}</p>
+                  </div>
+                  <div className="student-info-badge">
+                    <p className="student-name">{selectedSubmission.student.name}</p>
+                    <p className="student-email">{selectedSubmission.student.email}</p>
+                  </div>
+                </div>
+                
+                <div className="assignment-details">
+                  <div className="detail-row">
+                    <span className="label">Due Date:</span>
+                    <span className="value">{new Date(selectedSubmission.assignment.due_date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="label">Submitted:</span>
+                    <span className="value">{new Date(selectedSubmission.grade.submitted_at).toLocaleDateString()}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="label">Max Points:</span>
+                    <span className="value">{selectedSubmission.assignment.max_points}</span>
+                  </div>
+                </div>
+                
+                <div className="submission-content-section">
+                  <h4>Student Work</h4>
+                  <div className="submission-content">
+                    {selectedSubmission.grade.submission_content || 'No content submitted'}
+                  </div>
+                </div>
+                
+                <div className="grading-form">
+                  <h4>Enter Grade</h4>
+                  <div className="grade-input-group">
+                    <input
+                      type="number"
+                      className="grade-input"
+                      placeholder="Enter score (0-100)"
+                      value={gradeInput}
+                      onChange={(e) => setGradeInput(e.target.value)}
+                      min="0"
+                      max="100"
+                    />
+                    <span className="input-suffix">/ {selectedSubmission.assignment.max_points}</span>
+                  </div>
+                  <button 
+                    className="submit-grade-button"
+                    onClick={handleGradeSubmission}
+                  >
+                    Submit Grade
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grading-queue-list">
+              {gradingQueue.map((submission, index) => (
+                <div key={index} className="queue-item" onClick={() => {
+                  setSelectedSubmission(submission);
+                  setGradeInput('');
+                }}>
+                  <div className="queue-item-header">
+                    <h3>{submission.assignment.title}</h3>
+                    <span className="subject-badge">{submission.assignment.subject}</span>
+                  </div>
+                  <div className="queue-item-details">
+                    <div className="detail">
+                      <span className="label">Student:</span>
+                      <span className="value">{submission.student.name}</span>
+                    </div>
+                    <div className="detail">
+                      <span className="label">Submitted:</span>
+                      <span className="value">{new Date(submission.grade.submitted_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  <button className="grade-button">Grade Assignment →</button>
+                </div>
+              ))}
             </div>
           )}
         </div>
