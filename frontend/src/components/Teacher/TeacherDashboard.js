@@ -825,7 +825,7 @@ function TeacherDashboard({ userId, onLogout }) {
 
       {activeTab === 'grading' && (
         <div className="grading-window-section">
-          <h2>Grading Window</h2>
+          <h2>Upcoming</h2>
           <p className="section-description">Review and grade submitted student work</p>
           
           {(() => {
