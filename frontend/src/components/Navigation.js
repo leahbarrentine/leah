@@ -27,12 +27,14 @@ function Navigation({ activeTab, onTabChange, onLogout, userType, userName }) {
             >
               Overview
             </button>
-            <button
-              className={`nav-bubble ${activeTab === 'assignments' ? 'active' : ''}`}
-              onClick={() => onTabChange('assignments')}
-            >
-              {userType === 'teacher' ? 'Assignments to Grade' : 'Assignments'}
-            </button>
+            {userType === 'student' && (
+              <button
+                className={`nav-bubble ${activeTab === 'assignments' ? 'active' : ''}`}
+                onClick={() => onTabChange('assignments')}
+              >
+                Assignments
+              </button>
+            )}
             {userType === 'teacher' && (
               <>
                 <button
