@@ -836,7 +836,8 @@
 }
 
 .subject-bubble.subject-english,
-.subject-bubble.subject-literature {
+.subject-bubble.subject-literature,
+.subject-bubble.subject-american-literature {
   background: rgba(168, 85, 247, 0.15);
   color: #6b21a8;
 }
@@ -899,7 +900,8 @@
 }
 
 .challenging-assignment-card.subject-border-english,
-.challenging-assignment-card.subject-border-literature {
+.challenging-assignment-card.subject-border-literature,
+.challenging-assignment-card.subject-border-american-literature {
   border-left-color: #6b21a8;
 }
 

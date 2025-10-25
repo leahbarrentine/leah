@@ -689,7 +689,7 @@ function StudentDashboard({ userId, onLogout }) {
                         {item.assignment.subject}
                       </span>
                     </div>
-                    {item.grade && score !== null && (
+                    {item.grade && score !== null && (status === 'submitted' || status === 'graded') && (
                       <div className={`assignment-score ${scoreClass}`}>
                         {score.toFixed(0)}%
                       </div>
