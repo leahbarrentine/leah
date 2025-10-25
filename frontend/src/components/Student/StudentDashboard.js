@@ -125,6 +125,11 @@ function StudentDashboard({ userId, onLogout }) {
   const [showSubmittedAssignments, setShowSubmittedAssignments] = useState(false); // Toggle for submitted assignments section
   const [showOverdueAssignments, setShowOverdueAssignments] = useState(false); // Toggle for overdue assignments section
   const [showMoreImprovements, setShowMoreImprovements] = useState(false); // Toggle for extra improvement assignments
+  const [resolvedFeedback, setResolvedFeedback] = useState(() => {
+    // Load resolved feedback from localStorage
+    const saved = localStorage.getItem(`resolvedFeedback_${userId}`);
+    return saved ? JSON.parse(saved) : [];
+  });
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -146,6 +151,16 @@ function StudentDashboard({ userId, onLogout }) {
     loadDashboard();
     loadPerformance();
   }, [userId]);
+  
+  // Save resolved feedback to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(`resolvedFeedback_${userId}`, JSON.stringify(resolvedFeedback));
+  }, [resolvedFeedback, userId]);
+  
+  // Function to mark feedback as resolved
+  const markFeedbackAsResolved = (feedbackIndex) => {
+    setResolvedFeedback(prev => [...prev, feedbackIndex]);
+  };
 
   const loadDashboard = async () => {
     try {
@@ -470,6 +485,8 @@ function StudentDashboard({ userId, onLogout }) {
                       msg.content.toLowerCase().includes(item.assignment.title.toLowerCase())
                     );
                     
+                    const isResolved = resolvedFeedback.includes(index);
+                    
                     return (
                       <div key={index} className="feedback-message-item">
                         <div className="feedback-header">
@@ -477,31 +494,47 @@ function StudentDashboard({ userId, onLogout }) {
                           <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
                         </div>
                         <p className="feedback-content">{msg.content}</p>
-                        <div className="feedback-actions">
-                          <button 
-                            className="feedback-action-btn see-more-btn"
-                            onClick={() => {
-                              setActiveTab('messages');
-                              // The Messaging component will handle selecting the conversation
-                            }}
-                          >
-                            See More
-                          </button>
-                          <button 
-                            className="feedback-action-btn take-action-btn"
-                            onClick={() => {
-                              if (assignmentMatch) {
-                                // Open the assignment submission window
-                                handleWorkOnAssignment(assignmentMatch.assignment);
-                              } else {
-                                // Navigate to messages to reply
+                        {isResolved ? (
+                          <div className="feedback-resolved">
+                            <span className="resolved-badge">✓ Resolved</span>
+                          </div>
+                        ) : (
+                          <div className="feedback-actions">
+                            <button 
+                              className="feedback-action-btn see-more-btn"
+                              onClick={() => {
+                                markFeedbackAsResolved(index);
                                 setActiveTab('messages');
-                              }
-                            }}
-                          >
-                            Take Action
-                          </button>
-                        </div>
+                                // Store teacher info for Messaging component to use
+                                sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
+                                  id: msg.teacher_id,
+                                  name: msg.teacher_name
+                                }));
+                              }}
+                            >
+                              See More
+                            </button>
+                            <button 
+                              className="feedback-action-btn take-action-btn"
+                              onClick={() => {
+                                markFeedbackAsResolved(index);
+                                if (assignmentMatch) {
+                                  // Open the assignment submission window
+                                  handleWorkOnAssignment(assignmentMatch.assignment);
+                                } else {
+                                  // Navigate to messages to reply
+                                  setActiveTab('messages');
+                                  sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
+                                    id: msg.teacher_id,
+                                    name: msg.teacher_name
+                                  }));
+                                }
+                              }}
+                            >
+                              Take Action
+                            </button>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

@@ -370,11 +370,25 @@
 
 .take-action-btn {
   background: var(--primary-blue);
-  color: white;
+  color: black;
 }
 
 .take-action-btn:hover {
   background: var(--primary-dark);
+}
+
+.feedback-resolved {
+  padding: var(--space-sm) 0;
+}
+
+.resolved-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .no-improvements {
