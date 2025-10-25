@@ -420,12 +420,13 @@ function StudentDashboard({ userId, onLogout }) {
           <div className="improvement-card">
             <h3>Areas for Improvement</h3>
             
-            {/* Recent Test Scores */}
-            {recent_graded_assignments && recent_graded_assignments.length > 0 && (
+            {/* Recent Test Scores - Only show scores below 75% */}
+            {recent_graded_assignments && recent_graded_assignments.filter(item => item.grade.score < 75).length > 0 && (
               <>
                 <h4 className="subsection-title">Recent Test Scores</h4>
                 <div className="recent-scores-list">
-                  {recent_graded_assignments.slice(0, showMoreImprovements ? recent_graded_assignments.length : 3).map((item, index) => (
+                  {recent_graded_assignments.filter(item => item.grade.score < 75).slice(0, showMoreImprovements ? recent_graded_assignments.filter(item => item.grade.score < 75).length : 3).map((item, index) => (
+</select>
                     <div key={index} className={`recent-score-item ${item.grade.score >= 90 ? 'score-excellent' : item.grade.score >= 75 ? 'score-good' : 'score-needs-improvement'}`}>
                       <div className="score-info">
                         <div className="score-header">
@@ -448,12 +449,12 @@ function StudentDashboard({ userId, onLogout }) {
                   ))}
                 </div>
                 
-                {recent_graded_assignments.length > 3 && (
+                {recent_graded_assignments.filter(item => item.grade.score < 75).length > 3 && (
                   <button 
                     className="see-more-button"
                     onClick={() => setShowMoreImprovements(!showMoreImprovements)}
                   >
-                    {showMoreImprovements ? '▲ See Less' : `▼ See More (${recent_graded_assignments.length - 3} more)`}
+                    {showMoreImprovements ? '▲ See Less' : `▼ See More (${recent_graded_assignments.filter(item => item.grade.score < 75).length - 3} more)`}
                   </button>
                 )}
               </>
@@ -477,9 +478,9 @@ function StudentDashboard({ userId, onLogout }) {
               </>
             )}
             
-            {(!recent_graded_assignments || recent_graded_assignments.length === 0) && 
+            {(!recent_graded_assignments || recent_graded_assignments.filter(item => item.grade.score < 75).length === 0) && 
              (!recent_feedback_messages || recent_feedback_messages.length === 0) && (
-              <p className="no-improvements">No recent assignments or feedback to display. Keep working on your assignments!</p>
+              <p className="no-improvements">Great job! No areas for improvement at this time. Keep up the excellent work!</p>
             )}
           </div>
 
