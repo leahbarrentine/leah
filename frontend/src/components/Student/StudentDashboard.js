@@ -124,6 +124,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [submissionStatuses, setSubmissionStatuses] = useState({}); // Track submission status for each assignment
   const [showSubmittedAssignments, setShowSubmittedAssignments] = useState(false); // Toggle for submitted assignments section
   const [showOverdueAssignments, setShowOverdueAssignments] = useState(false); // Toggle for overdue assignments section
+  const [showMoreImprovements, setShowMoreImprovements] = useState(false); // Toggle for extra improvement assignments
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -256,7 +257,7 @@ function StudentDashboard({ userId, onLogout }) {
     return <div className="container">Error loading dashboard</div>;
   }
 
-  const { student, prediction, upcoming_assignments, assignments_with_grades } = dashboard;
+  const { student, prediction, upcoming_assignments, assignments_with_grades, recent_graded_assignments, recent_feedback_messages } = dashboard;
   const riskLevel = prediction.risk_level;
   
   // Extract unique subjects for filtering
@@ -415,24 +416,72 @@ function StudentDashboard({ userId, onLogout }) {
             </div>
           )}
           
-          {/* Poor Performance Assignments */}
-          {poorAssignments.length > 0 && (
-            <div className="improvement-card">
-              <h3>Areas for Improvement</h3>
-              <p>Focus on these assignments where you scored below 75%:</p>
-              <div className="poor-assignments-list">
-                {poorAssignments.map(item => (
-                  <div key={item.assignment.id} className="poor-assignment-item">
-                    <div className="assignment-details">
-                      <strong>{item.assignment.title}</strong>
-                      <span className="assignment-subject">{item.assignment.subject}</span>
+          {/* Areas for Improvement - Always shown for all students */}
+          <div className="improvement-card">
+            <h3>Areas for Improvement</h3>
+            
+            {/* Recent Test Scores */}
+            {recent_graded_assignments && recent_graded_assignments.length > 0 && (
+              <>
+                <h4 className="subsection-title">Recent Test Scores</h4>
+                <div className="recent-scores-list">
+                  {recent_graded_assignments.slice(0, showMoreImprovements ? recent_graded_assignments.length : 3).map((item, index) => (
+                    <div key={index} className="recent-score-item">
+                      <div className="score-info">
+                        <div className="score-header">
+                          <strong>{item.assignment?.title || 'Assignment'}</strong>
+                          <span className={`subject-bubble subject-${item.assignment?.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                            {item.assignment?.subject}
+                          </span>
+                        </div>
+                        <div className={`score-display ${item.grade.score >= 90 ? 'excellent' : item.grade.score >= 75 ? 'good' : 'needs-improvement'}`}>
+                          {item.grade.score.toFixed(0)}%
+                        </div>
+                      </div>
+                      {item.teacher_comment && (
+                        <div className="teacher-feedback">
+                          <strong>Teacher Feedback:</strong>
+                          <p>{item.teacher_comment}</p>
+                        </div>
+                      )}
                     </div>
-                    <div className="score-badge poor">{item.grade.score.toFixed(0)}%</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  ))}
+                </div>
+                
+                {recent_graded_assignments.length > 3 && (
+                  <button 
+                    className="see-more-button"
+                    onClick={() => setShowMoreImprovements(!showMoreImprovements)}
+                  >
+                    {showMoreImprovements ? '▲ See Less' : `▼ See More (${recent_graded_assignments.length - 3} more)`}
+                  </button>
+                )}
+              </>
+            )}
+            
+            {/* Recent Teacher Feedback from Messages */}
+            {recent_feedback_messages && recent_feedback_messages.length > 0 && (
+              <>
+                <h4 className="subsection-title">Recent Teacher Feedback</h4>
+                <div className="feedback-messages-list">
+                  {recent_feedback_messages.slice(0, 3).map((msg, index) => (
+                    <div key={index} className="feedback-message-item">
+                      <div className="feedback-header">
+                        <strong>{msg.teacher_name}</strong>
+                        <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <p className="feedback-content">{msg.content}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            
+            {(!recent_graded_assignments || recent_graded_assignments.length === 0) && 
+             (!recent_feedback_messages || recent_feedback_messages.length === 0) && (
+              <p className="no-improvements">No recent assignments or feedback to display. Keep working on your assignments!</p>
+            )}
+          </div>
 
           {/* Study Tips */}
           {prediction.should_emphasize_tips && Object.keys(prediction.study_tips).length > 0 && (
