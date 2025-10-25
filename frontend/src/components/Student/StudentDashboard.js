@@ -434,7 +434,9 @@ function StudentDashboard({ userId, onLogout }) {
                   <div className="assignment-header">
                     <div className="assignment-info">
                       <div className="assignment-title">{item.assignment.title}</div>
-                      <div className="assignment-subject">{item.assignment.subject}</div>
+                      <span className={`subject-bubble subject-${item.assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {item.assignment.subject}
+                      </span>
                     </div>
                     {item.grade && score !== null && (
                       <div className={`assignment-score ${scoreClass}`}>

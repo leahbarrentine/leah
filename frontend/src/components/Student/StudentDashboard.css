@@ -505,13 +505,19 @@
   justify-content: space-between;
   align-items: start;
   margin-bottom: var(--space-xs);
+  gap: var(--space-md);
+}
+
+.assignment-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .assignment-title {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   color: black;
-  margin-bottom: 4px;
 }
 
 .assignment-subject {
