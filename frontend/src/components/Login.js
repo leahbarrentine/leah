@@ -79,13 +79,13 @@ function Login({ onLogin }) {
               className={`user-type-button ${userType === 'student' ? 'active' : ''}`}
               onClick={() => setUserType('student')}
             >
-              Student
+              🎓 Student
             </button>
             <button
               className={`user-type-button ${userType === 'teacher' ? 'active' : ''}`}
               onClick={() => setUserType('teacher')}
             >
-              Teacher
+              👨‍🏫 Teacher
             </button>
           </div>
         </div>
