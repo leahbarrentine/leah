@@ -1432,6 +1432,47 @@
 }
 
 /* Teacher Grading Queue Sections */
+.grading-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  gap: var(--space-lg);
+}
+
+.grading-filter-controls {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.grading-filter-select,
+.assignment-filter-select {
+  padding: 8px 16px;
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
+  min-width: 160px;
+}
+
+.grading-filter-select:hover,
+.assignment-filter-select:hover {
+  border-color: var(--primary-blue);
+}
+
+.grading-filter-select:focus,
+.assignment-filter-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
 .queue-section-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { teacherAPI, studentAPI } from '../../api';
+import { teacherAPI, studentAPI, messageAPI } from '../../api';
 import Messaging from '../Messaging/Messaging';
 import Navigation from '../Navigation';
 import PerformanceChart from '../Student/PerformanceChart';
@@ -30,6 +30,8 @@ function TeacherDashboard({ userId, onLogout }) {
   const [feedbackInput, setFeedbackInput] = useState('');
   const [showNotSubmitted, setShowNotSubmitted] = useState(false);
   const [reminderModal, setReminderModal] = useState(null); // { student, assignment, dueDate }
+  const [gradingFilter, setGradingFilter] = useState('all'); // 'all' or 'assignment'
+  const [selectedAssignmentFilter, setSelectedAssignmentFilter] = useState(''); // specific assignment title
 
   useEffect(() => {
     loadDashboard();
@@ -946,9 +948,54 @@ function TeacherDashboard({ userId, onLogout }) {
               {/* Needs Grading - Submitted Assignments */}
               {submittedQueue.length > 0 && (
                 <div className="submitted-queue-section">
-                  <h3 className="queue-section-title">Needs Grading ({submittedQueue.length})</h3>
+                  <div className="grading-section-header">
+                    <h3 className="queue-section-title">Needs Grading ({submittedQueue.length})</h3>
+                    <div className="grading-filter-controls">
+                      <select 
+                        className="grading-filter-select"
+                        value={gradingFilter}
+                        onChange={(e) => {
+                          setGradingFilter(e.target.value);
+                          if (e.target.value === 'all') {
+                            setSelectedAssignmentFilter('');
+                          }
+                        }}
+                      >
+                        <option value="all">See All</option>
+                        <option value="assignment">Sort by Assignment</option>
+                      </select>
+                      
+                      {gradingFilter === 'assignment' && (() => {
+                        // Get unique assignments that have submissions
+                        const availableAssignments = [...new Set(
+                          submittedQueue.map(sub => sub.assignment.title)
+                        )];
+                        
+                        return (
+                          <select 
+                            className="assignment-filter-select"
+                            value={selectedAssignmentFilter}
+                            onChange={(e) => setSelectedAssignmentFilter(e.target.value)}
+                          >
+                            <option value="">Select Assignment</option>
+                            {availableAssignments.map((title, idx) => (
+                              <option key={idx} value={title}>{title}</option>
+                            ))}
+                          </select>
+                        );
+                      })()}
+                    </div>
+                  </div>
                   <div className="grading-cards-grid">
-                    {submittedQueue.map((submission, index) => {
+                    {submittedQueue
+                      .filter(submission => {
+                        if (gradingFilter === 'all') return true;
+                        if (gradingFilter === 'assignment' && selectedAssignmentFilter) {
+                          return submission.assignment.title === selectedAssignmentFilter;
+                        }
+                        return false;
+                      })
+                      .map((submission, index) => {
                       const dueDate = new Date(submission.assignment.due_date);
                       const submittedDate = new Date(submission.grade.submitted_at);
                       const isLate = submittedDate > dueDate;
