@@ -353,7 +353,22 @@
 
 .assignment-controls {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.subject-filter-select {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--radius-md);
+  background: white;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.subject-filter-select:hover {
+  border-color: var(--primary-blue);
+}
   align-items: center;
 }
 

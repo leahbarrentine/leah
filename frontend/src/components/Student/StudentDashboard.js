@@ -116,6 +116,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [completedTasks, setCompletedTasks] = useState([]);
   const [assignmentFilter, setAssignmentFilter] = useState('upcoming'); // 'upcoming', 'all'
   const [assignmentSort, setAssignmentSort] = useState('dueDate'); // 'dueDate', 'subject'
+  const [selectedSubject, setSelectedSubject] = useState('all'); // 'all' or specific subject
   const [todoSort, setTodoSort] = useState('dueDate'); // 'dueDate'
   const [quoteKey, setQuoteKey] = useState(0); // For forcing quote regeneration
   const [workingAssignment, setWorkingAssignment] = useState(null); // Assignment being worked on
@@ -255,6 +256,9 @@ function StudentDashboard({ userId, onLogout }) {
 
   const { student, prediction, upcoming_assignments, assignments_with_grades } = dashboard;
   const riskLevel = prediction.risk_level;
+  
+  // Extract unique subjects for filtering
+  const uniqueSubjects = [...new Set(assignments_with_grades.map(item => item.assignment.subject))].sort();
   
   // Calculate average grade and completion rate
   const gradesWithScores = assignments_with_grades.filter(item => item.grade && item.grade.score !== null);
@@ -495,24 +499,50 @@ function StudentDashboard({ userId, onLogout }) {
               <select 
                 className="sort-select"
                 value={assignmentSort} 
-                onChange={(e) => setAssignmentSort(e.target.value)}
+                onChange={(e) => {
+                  setAssignmentSort(e.target.value);
+                  if (e.target.value !== 'subject') {
+                    setSelectedSubject('all');
+                  }
+                }}
               >
                 <option value="dueDate">Sort by Due Date</option>
                 <option value="subject">Sort by Subject</option>
               </select>
+              {assignmentSort === 'subject' && (
+                <select 
+                  className="subject-filter-select"
+                  value={selectedSubject} 
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                >
+                  <option value="all">All Subjects</option>
+                  {uniqueSubjects.map(subject => (
+                    <option key={subject} value={subject}>{subject}</option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
           <div className="assignments-list">
             {assignments_with_grades
               .filter(item => {
+                // Filter by upcoming/all
                 if (assignmentFilter === 'upcoming') {
                   const dueDate = new Date(item.assignment.due_date);
                   const today = new Date();
                   const submissionStatus = submissionStatuses[item.assignment.id];
                   const status = submissionStatus?.status || 'not_started';
                   // Exclude graded assignments and past due completed assignments
-                  return (dueDate >= today || status === 'not_started' || status === 'in_progress') && status !== 'graded';
+                  if (!((dueDate >= today || status === 'not_started' || status === 'in_progress') && status !== 'graded')) {
+                    return false;
+                  }
                 }
+                
+                // Filter by subject if selected
+                if (assignmentSort === 'subject' && selectedSubject !== 'all') {
+                  return item.assignment.subject === selectedSubject;
+                }
+                
                 return true;
               })
               .sort((a, b) => {
