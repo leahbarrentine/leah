@@ -724,6 +724,39 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.submitted-assignments-section {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 2px solid var(--neutral-100);
+}
+
+.expand-submitted-button {
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.expand-submitted-button:hover {
+  background: var(--neutral-100);
+  border-color: var(--primary-blue);
+  color: var(--text-primary);
+}
+
+.submitted-assignments-list {
+  margin-top: var(--space-md);
+}
+
 .upcoming-assignment-header {
   display: flex;
   justify-content: space-between;

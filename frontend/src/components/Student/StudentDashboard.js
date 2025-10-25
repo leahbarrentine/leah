@@ -122,6 +122,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [workingAssignment, setWorkingAssignment] = useState(null); // Assignment being worked on
   const [assignmentContent, setAssignmentContent] = useState(''); // Work content
   const [submissionStatuses, setSubmissionStatuses] = useState({}); // Track submission status for each assignment
+  const [showSubmittedAssignments, setShowSubmittedAssignments] = useState(false); // Toggle for submitted assignments section
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -431,36 +432,94 @@ function StudentDashboard({ userId, onLogout }) {
           {/* Upcoming Assignments */}
           <div className="card">
             <h3>Upcoming Assignments</h3>
-            {upcoming_assignments.length === 0 ? (
-              <p>No upcoming assignments</p>
-            ) : (
-              <div className="upcoming-assignments-list">
-                {upcoming_assignments.map(assignment => {
-                  const submissionStatus = submissionStatuses[assignment.id];
-                  const status = submissionStatus?.status || 'not_started';
-                  const canWorkOn = status !== 'submitted' && status !== 'graded';
-                  
-                  return (
-                    <div 
-                      key={assignment.id} 
-                      className={`upcoming-assignment-card ${canWorkOn ? 'clickable' : 'completed'}`}
-                      onClick={() => canWorkOn && handleWorkOnAssignment(assignment)}
-                    >
-                      <div className="upcoming-assignment-header">
-                        <strong className="upcoming-assignment-title">{assignment.title}</strong>
-                        <span className={`subject-bubble subject-${assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
-                          {assignment.subject}
-                        </span>
-                      </div>
-                      <div className="upcoming-assignment-due">
-                        Due: {new Date(assignment.due_date).toLocaleDateString()}
-                        {!canWorkOn && <span className="assignment-status-badge">Submitted</span>}
-                      </div>
+            {(() => {
+              // Filter out submitted/graded assignments from upcoming
+              const activeAssignments = upcoming_assignments.filter(assignment => {
+                const submissionStatus = submissionStatuses[assignment.id];
+                const status = submissionStatus?.status || 'not_started';
+                return status !== 'submitted' && status !== 'graded';
+              });
+              
+              const submittedAssignments = upcoming_assignments.filter(assignment => {
+                const submissionStatus = submissionStatuses[assignment.id];
+                const status = submissionStatus?.status || 'not_started';
+                return status === 'submitted' || status === 'graded';
+              });
+              
+              return (
+                <>
+                  {activeAssignments.length === 0 ? (
+                    <p>No upcoming assignments</p>
+                  ) : (
+                    <div className="upcoming-assignments-list">
+                      {activeAssignments.map(assignment => {
+                        const submissionStatus = submissionStatuses[assignment.id];
+                        const status = submissionStatus?.status || 'not_started';
+                        
+                        return (
+                          <div 
+                            key={assignment.id} 
+                            className="upcoming-assignment-card clickable"
+                            onClick={() => handleWorkOnAssignment(assignment)}
+                          >
+                            <div className="upcoming-assignment-header">
+                              <strong className="upcoming-assignment-title">{assignment.title}</strong>
+                              <span className={`subject-bubble subject-${assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                                {assignment.subject}
+                              </span>
+                            </div>
+                            <div className="upcoming-assignment-due">
+                              Due: {new Date(assignment.due_date).toLocaleDateString()}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  )}
+                  
+                  {/* Submitted Assignments Section */}
+                  {submittedAssignments.length > 0 && (
+                    <div className="submitted-assignments-section">
+                      <button 
+                        className="expand-submitted-button"
+                        onClick={() => setShowSubmittedAssignments(!showSubmittedAssignments)}
+                      >
+                        {showSubmittedAssignments ? '▼' : '▶'} Submitted Assignments ({submittedAssignments.length})
+                      </button>
+                      
+                      {showSubmittedAssignments && (
+                        <div className="submitted-assignments-list">
+                          {submittedAssignments.map(assignment => {
+                            const submissionStatus = submissionStatuses[assignment.id];
+                            const status = submissionStatus?.status || 'not_started';
+                            
+                            return (
+                              <div 
+                                key={assignment.id} 
+                                className="upcoming-assignment-card completed"
+                              >
+                                <div className="upcoming-assignment-header">
+                                  <strong className="upcoming-assignment-title">{assignment.title}</strong>
+                                  <span className={`subject-bubble subject-${assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                                    {assignment.subject}
+                                  </span>
+                                </div>
+                                <div className="upcoming-assignment-due">
+                                  Due: {new Date(assignment.due_date).toLocaleDateString()}
+                                  <span className="assignment-status-badge">
+                                    {status === 'graded' ? 'Graded' : 'Submitted'}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
 
           {/* At-Risk Subjects */}
