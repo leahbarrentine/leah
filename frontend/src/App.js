@@ -11,20 +11,6 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {user && (
-          <nav className="navbar">
-            <div className="nav-container">
-              <h1 className="nav-title">2 Steps Ahead</h1>
-              <div className="nav-user">
-                <span>{user.name} ({user.type})</span>
-                <button className="button button-secondary" onClick={() => setUser(null)}>
-                  Logout
-                </button>
-              </div>
-            </div>
-          </nav>
-        )}
-
         <Routes>
           <Route path="/" element={
             user ? (
