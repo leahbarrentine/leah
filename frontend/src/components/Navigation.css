@@ -5,12 +5,12 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, #0071e3 0%, #00c6ff 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--neutral-100);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: var(--space-md) var(--space-xl);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .nav-container {
@@ -24,7 +24,7 @@
 .nav-brand {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  color: black;
+  color: white;
   letter-spacing: -0.5px;
 }
 
@@ -37,11 +37,11 @@
 .nav-bubble {
   padding: 12px 24px;
   border-radius: var(--radius-full);
-  background: var(--neutral-50);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
-  color: black;
+  color: white;
   cursor: pointer;
   transition: all var(--transition-base);
   font-family: var(--font-family);
@@ -52,24 +52,24 @@
 }
 
 .nav-bubble:hover {
-  background: var(--neutral-100);
+  background: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
 
 .nav-bubble.active {
-  background: var(--gradient-primary);
-  color: var(--text-primary);
+  background: white;
+  color: #0071e3;
   font-weight: var(--font-weight-semibold);
 }
 
 .nav-bubble.logout {
-  background: var(--white);
-  border: 1px solid var(--neutral-200);
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .nav-bubble.logout:hover {
-  border-color: var(--alert-coral);
-  color: var(--alert-coral);
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 @media (max-width: 768px) {

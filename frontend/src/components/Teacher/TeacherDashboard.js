@@ -225,17 +225,27 @@ function TeacherDashboard({ userId, onLogout }) {
                                 </p>
                                 <button 
                                   className="send-feedback-btn"
-                                  onClick={() => {
+                                  onClick={async () => {
                                     const feedbackMessage = subject.grade && subject.grade < 60 
                                       ? `I noticed you're having difficulty with ${subject.assignment}. Let's schedule time to review the core concepts together. Would you like to meet during office hours this week?`
                                       : subject.grade && subject.grade < 75
                                       ? `You're making progress on ${subject.assignment}, but there's room for improvement. Consider reviewing the material and attempting some practice problems. I'm here if you need help!`
                                       : `Good effort on ${subject.assignment}! To reach the next level, focus on [specific concept]. Keep up the good work!`;
                                     
-                                    setSelectedStudent({
-                                      ...student,
-                                      prefilledMessage: feedbackMessage
-                                    });
+                                    try {
+                                      const { messageAPI } = await import('../../api');
+                                      await messageAPI.sendMessage({
+                                        sender_id: userId,
+                                        sender_type: 'teacher',
+                                        recipient_id: student.id,
+                                        recipient_type: 'student',
+                                        content: feedbackMessage
+                                      });
+                                      alert(`Feedback sent to ${student.name}!`);
+                                    } catch (error) {
+                                      console.error('Error sending feedback:', error);
+                                      alert('Failed to send feedback. Please try again.');
+                                    }
                                   }}
                                 >
                                   Send
