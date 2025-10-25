@@ -142,6 +142,42 @@
   animation: floatGentle 22s ease-in-out infinite 5s;
 }
 
+/* Additional left-side emojis */
+.moon {
+  top: 25%;
+  left: 8%;
+  font-size: 42px;
+  animation: floatSlow 28s ease-in-out infinite 3s;
+}
+
+.comet {
+  top: 50%;
+  left: 5%;
+  font-size: 38px;
+  animation: floatDiagonal 24s ease-in-out infinite 1s;
+}
+
+.planet {
+  top: 65%;
+  left: 15%;
+  font-size: 40px;
+  animation: floatGentle 26s ease-in-out infinite 4s;
+}
+
+.alien {
+  top: 80%;
+  left: 8%;
+  font-size: 36px;
+  animation: bounce 4s ease-in-out infinite 2s;
+}
+
+.telescope {
+  top: 35%;
+  left: 12%;
+  font-size: 34px;
+  animation: floatGentle 20s ease-in-out infinite 6s;
+}
+
 @keyframes floatSlow {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
   25% { transform: translate(-15px, 10px) rotate(5deg); }

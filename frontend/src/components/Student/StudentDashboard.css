@@ -42,10 +42,42 @@
   border-left: 4px solid black;
 }
 
+.study-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
 .study-plan-card h3 {
   color: var(--text-primary);
   font-size: var(--font-size-xl);
-  margin-bottom: var(--space-lg);
+  margin: 0;
+}
+
+.todo-sort-select {
+  padding: 8px 16px;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
+}
+
+.todo-sort-select:hover {
+  border-color: var(--primary-blue);
+}
+
+.todo-sort-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
 }
 
 .study-checklist {
@@ -77,6 +109,19 @@
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   transition: all var(--transition-base);
+}
+
+.task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.task-due-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
 .checklist-item.clickable {
@@ -225,7 +270,22 @@
 }
 
 .quote-alert-row .alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
   border-radius: var(--radius-lg);
+}
+
+.quote-alert-row .alert .alert-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.quote-alert-row .alert .alert-text {
+  font-size: var(--font-size-base);
+  text-align: center;
+  margin: 0;
+  line-height: var(--line-height-normal);
 }
 
 .dashboard-card {
@@ -549,6 +609,26 @@
   background: var(--primary-blue);
   color: var(--white);
   box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
+}
+
+.see-tips-button {
+  margin-top: var(--space-lg);
+  width: 100%;
+  padding: 12px 24px;
+  background: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.see-tips-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
 }
 
 @media (max-width: 768px) {

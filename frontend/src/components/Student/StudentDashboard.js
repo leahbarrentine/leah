@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { studentAPI, messageAPI } from '../../api';
 import PerformanceChart from './PerformanceChart';
 import StudyTips from './StudyTips';
+import Tips from './Tips';
 import Messaging from '../Messaging/Messaging';
 import Navigation from '../Navigation';
 import './StudentDashboard.css';
@@ -44,26 +45,65 @@ const getMotivationalQuote = (avgGrade, riskLevel) => {
   }
 };
 
-// Generate study plan based on performance
+// Generate study plan based on performance with due dates
 const generateStudyPlan = (avgGrade, completionRate, poorAssignments) => {
   const plan = [];
+  const today = new Date();
   
   if (avgGrade < 75) {
-    plan.push("Review core concepts daily for 30 minutes");
-    plan.push("Complete practice problems before attempting assignments");
+    const dueDate1 = new Date(today);
+    dueDate1.setDate(dueDate1.getDate() + 2);
+    plan.push({
+      task: "Review core concepts daily for 30 minutes",
+      dueDate: dueDate1.toISOString()
+    });
+    
+    const dueDate2 = new Date(today);
+    dueDate2.setDate(dueDate2.getDate() + 3);
+    plan.push({
+      task: "Complete practice problems before attempting assignments",
+      dueDate: dueDate2.toISOString()
+    });
   }
   
   if (completionRate < 0.8) {
-    plan.push("Set reminders for assignment due dates");
-    plan.push("Break large assignments into smaller tasks");
+    const dueDate3 = new Date(today);
+    dueDate3.setDate(dueDate3.getDate() + 1);
+    plan.push({
+      task: "Set reminders for assignment due dates",
+      dueDate: dueDate3.toISOString()
+    });
+    
+    const dueDate4 = new Date(today);
+    dueDate4.setDate(dueDate4.getDate() + 4);
+    plan.push({
+      task: "Break large assignments into smaller tasks",
+      dueDate: dueDate4.toISOString()
+    });
   }
   
   if (poorAssignments.length > 0) {
-    plan.push(`Focus on improving in: ${poorAssignments.slice(0, 2).map(a => a.assignment.title).join(', ')}`);
+    const dueDate5 = new Date(today);
+    dueDate5.setDate(dueDate5.getDate() + 5);
+    plan.push({
+      task: `Focus on improving in: ${poorAssignments.slice(0, 2).map(a => a.assignment.title).join(', ')}`,
+      dueDate: dueDate5.toISOString()
+    });
   }
   
-  plan.push("Ask questions during office hours");
-  plan.push("Form a study group with classmates");
+  const dueDate6 = new Date(today);
+  dueDate6.setDate(dueDate6.getDate() + 7);
+  plan.push({
+    task: "Ask questions during office hours",
+    dueDate: dueDate6.toISOString()
+  });
+  
+  const dueDate7 = new Date(today);
+  dueDate7.setDate(dueDate7.getDate() + 6);
+  plan.push({
+    task: "Form a study group with classmates",
+    dueDate: dueDate7.toISOString()
+  });
   
   return plan;
 };
@@ -76,6 +116,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [completedTasks, setCompletedTasks] = useState([]);
   const [assignmentFilter, setAssignmentFilter] = useState('upcoming'); // 'upcoming', 'all'
   const [assignmentSort, setAssignmentSort] = useState('dueDate'); // 'dueDate'
+  const [todoSort, setTodoSort] = useState('dueDate'); // 'dueDate'
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -144,8 +185,17 @@ function StudentDashboard({ userId, onLogout }) {
   const motivationalQuote = getMotivationalQuote(avgGrade, riskLevel);
   const studyPlan = generateStudyPlan(avgGrade, completionRate, poorAssignments);
   
-  // Filter out completed tasks from study plan
-  const pendingTasks = studyPlan.filter(task => !completedTasks.includes(task));
+  // Filter and sort tasks
+  const pendingTasks = studyPlan
+    .filter(taskObj => !completedTasks.includes(taskObj.task))
+    .sort((a, b) => {
+      if (todoSort === 'dueDate') {
+        return new Date(a.dueDate) - new Date(b.dueDate);
+      }
+      return 0;
+    });
+  
+  const completedTaskObjs = studyPlan.filter(taskObj => completedTasks.includes(taskObj.task));
   
   // Handle task completion
   const handleTaskToggle = (task) => {
@@ -180,10 +230,13 @@ function StudentDashboard({ userId, onLogout }) {
             {/* Risk Alert */}
             {riskLevel !== 'low' && (
               <div className={`alert alert-${riskLevel === 'high' ? 'danger' : 'warning'}`}>
-                <strong>Performance Alert:</strong> {riskLevel === 'high' ? 'Your performance has declined significantly.' : 'Your performance shows some decline.'}
-                {prediction.declining && (
-                  <span> Your grades have decreased by {(prediction.decline_percentage * 100).toFixed(1)}% this week.</span>
-                )}
+                <div className="alert-icon">‼️</div>
+                <p className="alert-text">
+                  <strong>Performance Alert:</strong> {riskLevel === 'high' ? 'Your performance has declined significantly.' : 'Your performance shows some decline.'}
+                  {prediction.declining && (
+                    <span> Your grades have decreased by {(prediction.decline_percentage * 100).toFixed(1)}% this week.</span>
+                  )}
+                </p>
               </div>
             )}
           </div>
@@ -191,20 +244,32 @@ function StudentDashboard({ userId, onLogout }) {
           {/* Study Plan */}
           {studyPlan.length > 0 && (
             <div className="study-plan-card">
-              <h3>Your Personalized Study Plan</h3>
+              <div className="study-plan-header">
+                <h3>Your Personalized Study Plan</h3>
+                <select 
+                  className="todo-sort-select"
+                  value={todoSort} 
+                  onChange={(e) => setTodoSort(e.target.value)}
+                >
+                  <option value="dueDate">Sort by Next Due</option>
+                </select>
+              </div>
               
               {pendingTasks.length > 0 && (
                 <>
                   <h4 className="section-title">To Do</h4>
                   <div className="study-checklist">
-                    {pendingTasks.map((item, idx) => (
+                    {pendingTasks.map((taskObj, idx) => (
                       <div 
                         key={idx} 
                         className="checklist-item clickable"
-                        onClick={() => handleTaskToggle(item)}
+                        onClick={() => handleTaskToggle(taskObj.task)}
                       >
                         <span className="checkbox">☐</span>
-                        <span>{item}</span>
+                        <div className="task-content">
+                          <span>{taskObj.task}</span>
+                          <span className="task-due-date">Due: {new Date(taskObj.dueDate).toLocaleDateString()}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -215,14 +280,17 @@ function StudentDashboard({ userId, onLogout }) {
                 <>
                   <h4 className="section-title completed-section">Completed</h4>
                   <div className="study-checklist completed">
-                    {completedTasks.map((item, idx) => (
+                    {completedTaskObjs.map((taskObj, idx) => (
                       <div 
                         key={idx} 
                         className="checklist-item completed clickable"
-                        onClick={() => handleTaskToggle(item)}
+                        onClick={() => handleTaskToggle(taskObj.task)}
                       >
                         <span className="checkbox checked">☑</span>
-                        <span>{item}</span>
+                        <div className="task-content">
+                          <span>{taskObj.task}</span>
+                          <span className="task-due-date">Due: {new Date(taskObj.dueDate).toLocaleDateString()}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -296,6 +364,12 @@ function StudentDashboard({ userId, onLogout }) {
                   </div>
                 ))}
               </div>
+              <button 
+                className="button see-tips-button" 
+                onClick={() => setActiveTab('tips')}
+              >
+                See Tips
+              </button>
             </div>
           )}
         </div>
@@ -375,6 +449,10 @@ function StudentDashboard({ userId, onLogout }) {
 
       {activeTab === 'messages' && (
         <Messaging userId={userId} userType="student" />
+      )}
+
+      {activeTab === 'tips' && (
+        <Tips />
       )}
     </div>
     </>

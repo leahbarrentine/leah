@@ -39,6 +39,14 @@ function Navigation({ activeTab, onTabChange, onLogout, userType, userName }) {
             >
               Messages
             </button>
+            {userType === 'student' && (
+              <button
+                className={`nav-bubble ${activeTab === 'tips' ? 'active' : ''}`}
+                onClick={() => onTabChange('tips')}
+              >
+                Tips
+              </button>
+            )}
           </div>
         </div>
       </div>
