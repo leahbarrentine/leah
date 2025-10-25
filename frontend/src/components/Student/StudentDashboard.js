@@ -136,6 +136,7 @@ function StudentDashboard({ userId, onLogout }) {
     return saved ? JSON.parse(saved) : [];
   });
   const [showClosedFeedback, setShowClosedFeedback] = useState(false);
+  const [expandedFeedback, setExpandedFeedback] = useState([]); // Track which feedback items are expanded
   const [feedbackModal, setFeedbackModal] = useState(null); // { feedback: msg, index: number }
   
   // Helper function to get performance class
@@ -177,6 +178,15 @@ function StudentDashboard({ userId, onLogout }) {
   // Function to close feedback
   const closeFeedback = (feedbackIndex) => {
     setClosedFeedback(prev => [...prev, feedbackIndex]);
+  };
+  
+  // Function to toggle feedback expansion
+  const toggleFeedbackExpansion = (feedbackIndex) => {
+    setExpandedFeedback(prev => 
+      prev.includes(feedbackIndex) 
+        ? prev.filter(i => i !== feedbackIndex)
+        : [...prev, feedbackIndex]
+    );
   };
 
   const loadDashboard = async () => {
@@ -499,16 +509,19 @@ function StudentDashboard({ userId, onLogout }) {
                   <p className="no-new-feedback">No new feedback for now</p>
                 ) : (
                   <div className="feedback-messages-list">
-                    {recent_feedback_messages.slice(0, 3).filter((msg, index) => !closedFeedback.includes(index)).map((msg, index) => {
+                    {recent_feedback_messages.slice(0, 3).map((msg, origIndex) => {
+                      // Skip if closed
+                      if (closedFeedback.includes(origIndex)) return null;
+                      
                       // Try to detect if feedback mentions a specific assignment
                       const assignmentMatch = assignments_with_grades.find(item => 
                         msg.content.toLowerCase().includes(item.assignment.title.toLowerCase())
                       );
                       
-                      const isResolved = resolvedFeedback.includes(index);
+                      const isResolved = resolvedFeedback.includes(origIndex);
                       
                       return (
-                        <div key={index} className="feedback-message-item">
+                        <div key={origIndex} className="feedback-message-item">
                           <div className="feedback-header">
                             <strong>{msg.teacher_name}</strong>
                             <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
@@ -520,7 +533,7 @@ function StudentDashboard({ userId, onLogout }) {
                                 <button 
                                   className="feedback-action-btn see-more-btn"
                                   onClick={() => {
-                                    markFeedbackAsResolved(index);
+                                    markFeedbackAsResolved(origIndex);
                                     setActiveTab('messages');
                                     // Store teacher info for Messaging component to use
                                     sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
@@ -536,11 +549,11 @@ function StudentDashboard({ userId, onLogout }) {
                                   onClick={() => {
                                     if (assignmentMatch) {
                                       // If feedback mentions specific assignment, open submission window
-                                      markFeedbackAsResolved(index);
+                                      markFeedbackAsResolved(origIndex);
                                       handleWorkOnAssignment(assignmentMatch.assignment);
                                     } else {
                                       // If it's general feedback, show acknowledgment modal
-                                      setFeedbackModal({ feedback: msg, index });
+                                      setFeedbackModal({ feedback: msg, index: origIndex });
                                     }
                                   }}
                                 >
@@ -550,7 +563,7 @@ function StudentDashboard({ userId, onLogout }) {
                             )}
                             <button 
                               className="close-feedback-btn"
-                              onClick={() => closeFeedback(index)}
+                              onClick={() => closeFeedback(origIndex)}
                             >
                               Close
                             </button>
