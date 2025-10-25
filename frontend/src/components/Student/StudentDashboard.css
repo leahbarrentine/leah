@@ -560,8 +560,12 @@
   align-items: center;
 }
 
+.assignment-filter-select,
+.assignment-sort-select,
 .subject-filter-select {
   padding: var(--spacing-2) var(--spacing-3);
+  min-width: 160px;
+  max-width: 160px;
   border: 1px solid var(--neutral-300);
   border-radius: var(--radius-md);
   background: white;
