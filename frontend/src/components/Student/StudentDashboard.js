@@ -464,15 +464,47 @@ function StudentDashboard({ userId, onLogout }) {
               <>
                 <h4 className="subsection-title">Recent Teacher Feedback</h4>
                 <div className="feedback-messages-list">
-                  {recent_feedback_messages.slice(0, 3).map((msg, index) => (
-                    <div key={index} className="feedback-message-item">
-                      <div className="feedback-header">
-                        <strong>{msg.teacher_name}</strong>
-                        <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
+                  {recent_feedback_messages.slice(0, 3).map((msg, index) => {
+                    // Try to detect if feedback mentions a specific assignment
+                    const assignmentMatch = assignments_with_grades.find(item => 
+                      msg.content.toLowerCase().includes(item.assignment.title.toLowerCase())
+                    );
+                    
+                    return (
+                      <div key={index} className="feedback-message-item">
+                        <div className="feedback-header">
+                          <strong>{msg.teacher_name}</strong>
+                          <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <p className="feedback-content">{msg.content}</p>
+                        <div className="feedback-actions">
+                          <button 
+                            className="feedback-action-btn see-more-btn"
+                            onClick={() => {
+                              setActiveTab('messages');
+                              // The Messaging component will handle selecting the conversation
+                            }}
+                          >
+                            See More
+                          </button>
+                          <button 
+                            className="feedback-action-btn take-action-btn"
+                            onClick={() => {
+                              if (assignmentMatch) {
+                                // Open the assignment submission window
+                                handleWorkOnAssignment(assignmentMatch.assignment);
+                              } else {
+                                // Navigate to messages to reply
+                                setActiveTab('messages');
+                              }
+                            }}
+                          >
+                            Take Action
+                          </button>
+                        </div>
                       </div>
-                      <p className="feedback-content">{msg.content}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             )}
