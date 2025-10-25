@@ -1112,6 +1112,7 @@ function TeacherDashboard({ userId, onLogout }) {
                 name: selectedStudent.name
               }}
               initialMessage={selectedStudent.prefilledMessage || ''}
+              directChatOnly={true}
             />
             <button className="button button-secondary" onClick={() => setSelectedStudent(null)}>
               Close

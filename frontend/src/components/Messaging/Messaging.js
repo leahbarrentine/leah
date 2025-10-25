@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { messageAPI, generalAPI } from '../../api';
 import './Messaging.css';
 
-function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
+function Messaging({ userId, userType, preSelectedRecipient, initialMessage, directChatOnly = false }) {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [newMessage, setNewMessage] = useState(initialMessage || '');
@@ -142,42 +142,44 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
   }
 
   return (
-    <div className="messaging-container">
-      <div className="conversations-sidebar">
-        <div className="sidebar-header">
-          <h3>Messages</h3>
-          <button className="button" onClick={startNewConversation}>
-            New
-          </button>
-        </div>
-        
-        <div className="conversations-list">
-          {conversations.length === 0 ? (
-            <p className="no-conversations">No messages yet</p>
-          ) : (
-            conversations.map((conv, idx) => {
-              const partner = recipientList.find(r => r.id === conv.partner_id);
-              return (
-                <div
-                  key={idx}
-                  className={`conversation-item ${selectedConversation === conv ? 'active' : ''}`}
-                  onClick={() => selectConversation(conv)}
-                >
-                  <div className="conversation-info">
-                    <strong>{partner?.name || 'Unknown'}</strong>
-                    <span className="message-preview">
-                      {conv.messages[0]?.content.substring(0, 40)}...
-                    </span>
+    <div className={`messaging-container ${directChatOnly ? 'direct-chat-only' : ''}`}>
+      {!directChatOnly && (
+        <div className="conversations-sidebar">
+          <div className="sidebar-header">
+            <h3>Messages</h3>
+            <button className="button" onClick={startNewConversation}>
+              New
+            </button>
+          </div>
+          
+          <div className="conversations-list">
+            {conversations.length === 0 ? (
+              <p className="no-conversations">No messages yet</p>
+            ) : (
+              conversations.map((conv, idx) => {
+                const partner = recipientList.find(r => r.id === conv.partner_id);
+                return (
+                  <div
+                    key={idx}
+                    className={`conversation-item ${selectedConversation === conv ? 'active' : ''}`}
+                    onClick={() => selectConversation(conv)}
+                  >
+                    <div className="conversation-info">
+                      <strong>{partner?.name || 'Unknown'}</strong>
+                      <span className="message-preview">
+                        {conv.messages[0]?.content.substring(0, 40)}...
+                      </span>
+                    </div>
+                    {conv.unread_count > 0 && (
+                      <div className="unread-badge">{conv.unread_count}</div>
+                    )}
                   </div>
-                  {conv.unread_count > 0 && (
-                    <div className="unread-badge">{conv.unread_count}</div>
-                  )}
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="message-content">
         {showNewChatDropdown ? (

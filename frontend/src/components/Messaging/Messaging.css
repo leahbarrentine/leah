@@ -458,6 +458,15 @@
   margin: 0 auto;
 }
 
+.messaging-container.direct-chat-only {
+  grid-template-columns: 1fr;
+  max-width: 100%;
+}
+
+.messaging-container.direct-chat-only .message-content {
+  width: 100%;
+}
+
 @media (max-width: 768px) {
   .messaging-layout {
     grid-template-columns: 1fr;
