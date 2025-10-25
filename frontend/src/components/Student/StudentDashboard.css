@@ -204,9 +204,22 @@
 
 .recent-score-item {
   padding: var(--space-lg);
-  background: var(--bg-secondary);
   border-radius: var(--radius-md);
-  border-left: 3px solid var(--neutral-300);
+}
+
+.recent-score-item.score-excellent {
+  background: rgba(144, 238, 144, 0.12);
+  border-left: 4px solid var(--success-green);
+}
+
+.recent-score-item.score-good {
+  background: rgba(244, 208, 63, 0.12);
+  border-left: 4px solid var(--warning-amber);
+}
+
+.recent-score-item.score-needs-improvement {
+  background: rgba(229, 115, 115, 0.12);
+  border-left: 4px solid var(--alert-coral);
 }
 
 .score-info {

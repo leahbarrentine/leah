@@ -426,7 +426,7 @@ function StudentDashboard({ userId, onLogout }) {
                 <h4 className="subsection-title">Recent Test Scores</h4>
                 <div className="recent-scores-list">
                   {recent_graded_assignments.slice(0, showMoreImprovements ? recent_graded_assignments.length : 3).map((item, index) => (
-                    <div key={index} className="recent-score-item">
+                    <div key={index} className={`recent-score-item ${item.grade.score >= 90 ? 'score-excellent' : item.grade.score >= 75 ? 'score-good' : 'score-needs-improvement'}`}>
                       <div className="score-info">
                         <div className="score-header">
                           <strong>{item.assignment?.title || 'Assignment'}</strong>
