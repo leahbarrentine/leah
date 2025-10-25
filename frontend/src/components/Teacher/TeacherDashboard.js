@@ -14,9 +14,13 @@ function TeacherDashboard({ userId, onLogout }) {
   const [completedGradingTasks, setCompletedGradingTasks] = useState([]);
   const [taskFilter, setTaskFilter] = useState('all'); // 'all', 'grading', 'messages', 'scheduling'
   const [taskSort, setTaskSort] = useState('none'); // 'none', 'dueDate'
+  const [allStudents, setAllStudents] = useState([]);
+  const [allStudentsPerformance, setAllStudentsPerformance] = useState({});
+  const [feedbackModal, setFeedbackModal] = useState(null); // { student, subject, message }
 
   useEffect(() => {
     loadDashboard();
+    loadAllStudents();
   }, [userId]);
 
   const loadDashboard = async () => {
@@ -41,6 +45,48 @@ function TeacherDashboard({ userId, onLogout }) {
       console.error('Error loading dashboard:', error);
     }
     setLoading(false);
+  };
+
+  const loadAllStudents = async () => {
+    try {
+      const { generalAPI } = await import('../../api');
+      const response = await generalAPI.getStudents();
+      setAllStudents(response.data);
+      
+      // Load performance data for all students
+      const performanceData = {};
+      for (const student of response.data) {
+        try {
+          const perfResponse = await studentAPI.getPerformance(student.id);
+          performanceData[student.id] = perfResponse.data;
+        } catch (error) {
+          console.error(`Error loading performance for student ${student.id}:`, error);
+        }
+      }
+      setAllStudentsPerformance(performanceData);
+    } catch (error) {
+      console.error('Error loading all students:', error);
+    }
+  };
+
+  const handleSendFeedback = async () => {
+    if (!feedbackModal) return;
+    
+    try {
+      const { messageAPI } = await import('../../api');
+      await messageAPI.sendMessage({
+        sender_id: userId,
+        sender_type: 'teacher',
+        recipient_id: feedbackModal.student.id,
+        recipient_type: 'student',
+        content: feedbackModal.message
+      });
+      alert(`Feedback sent to ${feedbackModal.student.name}!`);
+      setFeedbackModal(null);
+    } catch (error) {
+      console.error('Error sending feedback:', error);
+      alert('Failed to send feedback. Please try again.');
+    }
   };
 
   if (loading) {
@@ -312,27 +358,18 @@ function TeacherDashboard({ userId, onLogout }) {
                                 </p>
                                 <button 
                                   className="send-feedback-btn"
-                                  onClick={async () => {
+                                  onClick={() => {
                                     const feedbackMessage = subject.grade && subject.grade < 60 
                                       ? `I noticed you're having difficulty with ${subject.assignment}. Let's schedule time to review the core concepts together. Would you like to meet during office hours this week?`
                                       : subject.grade && subject.grade < 75
                                       ? `You're making progress on ${subject.assignment}, but there's room for improvement. Consider reviewing the material and attempting some practice problems. I'm here if you need help!`
                                       : `Good effort on ${subject.assignment}! To reach the next level, focus on [specific concept]. Keep up the good work!`;
                                     
-                                    try {
-                                      const { messageAPI } = await import('../../api');
-                                      await messageAPI.sendMessage({
-                                        sender_id: userId,
-                                        sender_type: 'teacher',
-                                        recipient_id: student.id,
-                                        recipient_type: 'student',
-                                        content: feedbackMessage
-                                      });
-                                      alert(`Feedback sent to ${student.name}!`);
-                                    } catch (error) {
-                                      console.error('Error sending feedback:', error);
-                                      alert('Failed to send feedback. Please try again.');
-                                    }
+                                    setFeedbackModal({
+                                      student,
+                                      subject,
+                                      message: feedbackMessage
+                                    });
                                   }}
                                 >
                                   Send
@@ -405,6 +442,90 @@ function TeacherDashboard({ userId, onLogout }) {
 
       {activeTab === 'messages' && (
         <Messaging userId={userId} userType="teacher" />
+      )}
+
+      {activeTab === 'performance' && (
+        <div className="performance-overviews-section">
+          <h2>Performance Overviews</h2>
+          <p className="section-description">Monitor all student performance trends and metrics</p>
+          
+          {allStudents.length === 0 ? (
+            <div className="empty-state">
+              <p>No students found</p>
+            </div>
+          ) : (
+            <div className="performance-grid">
+              {allStudents.map(student => (
+                <div key={student.id} className="performance-card">
+                  <div className="student-header">
+                    <div className="student-info-section">
+                      <h3 className="student-name">{student.name}</h3>
+                      <p className="student-email">{student.email}</p>
+                    </div>
+                  </div>
+                  
+                  {allStudentsPerformance[student.id] && allStudentsPerformance[student.id].length > 0 ? (
+                    <>
+                      <div className="performance-chart-container">
+                        <h4>Performance Trend</h4>
+                        <PerformanceChart data={allStudentsPerformance[student.id]} />
+                      </div>
+                      
+                      <div className="performance-metrics">
+                        <div className="metric">
+                          <span className="metric-label">Current Average</span>
+                          <span className="metric-value">
+                            {allStudentsPerformance[student.id][allStudentsPerformance[student.id].length - 1]?.avg_grade 
+                              ? `${allStudentsPerformance[student.id][allStudentsPerformance[student.id].length - 1].avg_grade.toFixed(1)}%`
+                              : 'N/A'}
+                          </span>
+                        </div>
+                        <div className="metric">
+                          <span className="metric-label">Completion Rate</span>
+                          <span className="metric-value">
+                            {allStudentsPerformance[student.id][allStudentsPerformance[student.id].length - 1]?.completion_rate
+                              ? `${(allStudentsPerformance[student.id][allStudentsPerformance[student.id].length - 1].completion_rate * 100).toFixed(0)}%`
+                              : 'N/A'}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="no-performance-data">
+                      <p>No performance data available yet</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Feedback Modal */}
+      {feedbackModal && (
+        <div className="modal-overlay" onClick={() => setFeedbackModal(null)}>
+          <div className="modal-content feedback-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Edit Feedback for {feedbackModal.student.name}</h3>
+            <p className="feedback-instructions">
+              Please customize the message below, especially replacing [specific concept] with the actual concept the student should focus on.
+            </p>
+            <textarea
+              className="feedback-textarea"
+              value={feedbackModal.message}
+              onChange={(e) => setFeedbackModal({...feedbackModal, message: e.target.value})}
+              rows={6}
+            />
+            <div className="modal-actions">
+              <button className="button button-primary" onClick={handleSendFeedback}>
+                Send Feedback
+              </button>
+              <button className="button button-secondary" onClick={() => setFeedbackModal(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Message Modal */}
