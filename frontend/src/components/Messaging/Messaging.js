@@ -81,6 +81,7 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
 
   const selectConversation = async (conv) => {
     setSelectedConversation(conv);
+    setShowNewChatDropdown(false); // Close new chat dropdown
     
     // Find recipient info
     const recipientType = conv.partner_type;
