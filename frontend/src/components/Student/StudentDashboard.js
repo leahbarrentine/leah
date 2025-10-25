@@ -329,21 +329,30 @@ function StudentDashboard({ userId, onLogout }) {
             </div>
 
             {/* Performance Status - Always shown */}
-            <div className={`alert alert-${riskLevel === 'high' ? 'danger' : riskLevel === 'medium' ? 'warning' : 'success'}`}>
+            <div className={`alert alert-${avgGrade <= 65 ? 'danger' : avgGrade <= 85 ? 'warning' : 'success'}`}>
               <div className="alert-icon">
-                {riskLevel === 'high' ? '‼️' : riskLevel === 'medium' ? '⚠️' : '✓'}
+                {avgGrade <= 65 ? '‼️' : avgGrade <= 85 ? '⚠️' : '✓'}
               </div>
               <p className="alert-text">
                 <strong>Performance Status:</strong> {
-                  riskLevel === 'high' 
-                    ? 'Your performance has declined significantly.' 
-                    : riskLevel === 'medium' 
-                    ? 'You could improve!' 
-                    : "You're good to go!"
+                  avgGrade <= 65 
+                    ? (() => {
+                        const areas = poorAssignments.length > 0 
+                          ? poorAssignments.slice(0, 2).map(a => a.assignment.subject).filter((v, i, a) => a.indexOf(v) === i).join(' and ')
+                          : 'your assignments';
+                        return `You should work on ${areas}. Your current average is ${avgGrade.toFixed(0)}%. Focus on completing assignments and reviewing concepts you find challenging.`;
+                      })()
+                    : avgGrade <= 85 
+                    ? (() => {
+                        const needsWork = poorAssignments.length > 0 
+                          ? poorAssignments.slice(0, 2).map(a => a.assignment.subject).filter((v, i, a) => a.indexOf(v) === i).join(' and ')
+                          : null;
+                        return needsWork 
+                          ? `You're doing well overall (${avgGrade.toFixed(0)}% average), but you could strengthen your understanding in ${needsWork}. Keep up the effort!`
+                          : `You're doing well with a ${avgGrade.toFixed(0)}% average. Keep focusing on the fundamentals and you'll reach the next level!`;
+                      })()
+                    : `Excellent work! Your ${avgGrade.toFixed(0)}% average shows strong understanding. Keep up the outstanding performance!`
                 }
-                {prediction.declining && riskLevel === 'high' && (
-                  <span> Your grades have decreased by {(prediction.decline_percentage * 100).toFixed(1)}% this week.</span>
-                )}
               </p>
             </div>
           </div>
