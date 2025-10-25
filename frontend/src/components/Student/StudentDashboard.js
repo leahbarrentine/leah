@@ -631,7 +631,7 @@ function StudentDashboard({ userId, onLogout }) {
               </select>
               {assignmentSort === 'subject' && (
                 <select 
-                  className="subject-filter-select"
+                  className="sort-select"
                   value={selectedSubject} 
                   onChange={(e) => setSelectedSubject(e.target.value)}
                 >
