@@ -27,6 +27,7 @@ function TeacherDashboard({ userId, onLogout }) {
   const [gradingQueue, setGradingQueue] = useState([]);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [gradeInput, setGradeInput] = useState('');
+  const [feedbackInput, setFeedbackInput] = useState('');
   const [showNotSubmitted, setShowNotSubmitted] = useState(false);
   const [reminderModal, setReminderModal] = useState(null); // { student, assignment, dueDate }
 
@@ -884,6 +885,20 @@ function TeacherDashboard({ userId, onLogout }) {
                   </div>
                 </div>
                 
+                <div className="feedback-section">
+                  <h4>Leave Feedback</h4>
+                  <p className="feedback-description">
+                    Feedback will be sent as a direct message to {selectedSubmission.student.name} tagged with the assignment name.
+                  </p>
+                  <textarea
+                    className="feedback-input-textarea"
+                    placeholder="Enter feedback for the student..."
+                    value={feedbackInput}
+                    onChange={(e) => setFeedbackInput(e.target.value)}
+                    rows={4}
+                  />
+                </div>
+                
                 <div className="grading-form">
                   <h4>Enter Grade</h4>
                   <div className="grade-input-group">
@@ -900,7 +915,26 @@ function TeacherDashboard({ userId, onLogout }) {
                   </div>
                   <button 
                     className="submit-grade-button"
-                    onClick={handleGradeSubmission}
+                    onClick={async () => {
+                      await handleGradeSubmission();
+                      
+                      // Send feedback as DM if provided
+                      if (feedbackInput.trim()) {
+                        try {
+                          await messageAPI.sendMessage({
+                            sender_id: userId,
+                            sender_type: 'teacher',
+                            recipient_id: selectedSubmission.student.id,
+                            recipient_type: 'student',
+                            content: `Feedback for ${selectedSubmission.assignment.title}:\n\n${feedbackInput}`
+                          });
+                        } catch (error) {
+                          console.error('Error sending feedback:', error);
+                        }
+                      }
+                      
+                      setFeedbackInput('');
+                    }}
                   >
                     Submit Grade
                   </button>
@@ -913,37 +947,39 @@ function TeacherDashboard({ userId, onLogout }) {
               {submittedQueue.length > 0 && (
                 <div className="submitted-queue-section">
                   <h3 className="queue-section-title">Needs Grading ({submittedQueue.length})</h3>
-                  <div className="grading-queue-list">
-                    {submittedQueue.map((submission, index) => (
-                      <div key={index} className="queue-item" onClick={() => {
-                        setSelectedSubmission(submission);
-                        setGradeInput('');
-                      }}>
-                        <div className="queue-item-header">
-                          <h3>{submission.assignment.title}</h3>
-                          <span className="subject-badge">{submission.assignment.subject}</span>
-                        </div>
-                        <div className="queue-item-details">
-                          <div className="detail">
-                            <span className="label">Student: </span>
-                            <span 
-                              className="value student-name-link"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedStudent(submission.student);
-                              }}
-                            >
-                              {submission.student.name}
-                            </span>
+                  <div className="grading-cards-grid">
+                    {submittedQueue.map((submission, index) => {
+                      const dueDate = new Date(submission.assignment.due_date);
+                      const submittedDate = new Date(submission.grade.submitted_at);
+                      const isLate = submittedDate > dueDate;
+                      
+                      return (
+                        <div key={index} className="grading-card-item">
+                          <div className="grading-card-header">
+                            <h4>{submission.student.name}</h4>
                           </div>
-                          <div className="detail">
-                            <span className="label">Submitted: </span>
-                            <span className="value">{new Date(submission.grade.submitted_at).toLocaleDateString()}</span>
+                          <div className="grading-card-body">
+                            <div className="submitted-info">
+                              <span className="info-label">Submitted:</span>
+                              <span className="info-value">{submittedDate.toLocaleDateString()}</span>
+                            </div>
+                            <div className={`submission-status ${isLate ? 'late' : 'on-time'}`}>
+                              ({isLate ? 'Late' : 'On Time'})
+                            </div>
                           </div>
+                          <button 
+                            className="see-more-btn"
+                            onClick={() => {
+                              setSelectedSubmission(submission);
+                              setGradeInput('');
+                              setFeedbackInput('');
+                            }}
+                          >
+                            See More
+                          </button>
                         </div>
-                        <button className="grade-button">Grade Assignment →</button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
