@@ -9,6 +9,7 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
   const [recipientList, setRecipientList] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState(preSelectedRecipient || null);
   const [loading, setLoading] = useState(true);
+  const [showNewChatDropdown, setShowNewChatDropdown] = useState(false);
 
   useEffect(() => {
     loadConversations();
@@ -110,6 +111,21 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
   const startNewConversation = () => {
     setSelectedConversation(null);
     setSelectedRecipient(null);
+    setShowNewChatDropdown(true);
+  };
+  
+  const selectNewRecipient = (recipient) => {
+    setSelectedRecipient({
+      id: recipient.id,
+      type: userType === 'student' ? 'teacher' : 'student',
+      name: recipient.name
+    });
+    setShowNewChatDropdown(false);
+    setSelectedConversation({
+      partner_id: recipient.id,
+      partner_type: userType === 'student' ? 'teacher' : 'student',
+      messages: []
+    });
   };
   
   // Get users not yet chatted with
@@ -163,7 +179,28 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
       </div>
 
       <div className="message-content">
-        {!selectedConversation && !selectedRecipient ? (
+        {showNewChatDropdown ? (
+          <div className="new-chat-selection">
+            <h3>Start a New Conversation</h3>
+            <p>Select a {userType === 'student' ? 'teacher' : 'student'} to message:</p>
+            <div className="available-recipients-list">
+              {availableRecipients.length === 0 ? (
+                <p className="no-recipients">You've already started conversations with everyone!</p>
+              ) : (
+                availableRecipients.map(recipient => (
+                  <div
+                    key={recipient.id}
+                    className="recipient-option"
+                    onClick={() => selectNewRecipient(recipient)}
+                  >
+                    <div className="recipient-name">{recipient.name}</div>
+                    <div className="recipient-email">{recipient.email}</div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        ) : !selectedConversation && !selectedRecipient ? (
           <div className="empty-state">
             <p>Select a conversation or start a new one</p>
           </div>
@@ -173,27 +210,6 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
               <h3>
                 {selectedRecipient?.name || 'Select Recipient'}
               </h3>
-              {!selectedRecipient && (
-                <select 
-                  className="recipient-dropdown"
-                  value={selectedRecipient?.id || ''} 
-                  onChange={(e) => {
-                    const recipient = availableRecipients.find(r => r.id === parseInt(e.target.value));
-                    if (recipient) {
-                      setSelectedRecipient({
-                        id: recipient.id,
-                        type: userType === 'student' ? 'teacher' : 'student',
-                        name: recipient.name
-                      });
-                    }
-                  }}
-                >
-                  <option value="">Select {userType === 'student' ? 'Teacher' : 'Student'}</option>
-                  {availableRecipients.map(r => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
-                  ))}
-                </select>
-              )}
             </div>
 
             <div className="messages-list">

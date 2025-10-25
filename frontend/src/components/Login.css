@@ -114,67 +114,67 @@
   pointer-events: none;
 }
 
-/* Left side emojis - evenly spaced vertically and horizontally */
+/* Left side emojis - scattered across the page */
 .moon {
-  top: 10%;
-  left: 10%;
+  top: 8%;
+  left: 5%;
   font-size: 42px;
   animation: floatSlow 28s ease-in-out infinite 3s;
 }
 
 .telescope {
-  top: 25%;
-  left: 10%;
+  top: 30%;
+  left: 12%;
   font-size: 34px;
   animation: floatGentle 20s ease-in-out infinite 6s;
 }
 
 .sparkles-1 {
-  top: 40%;
-  left: 10%;
+  top: 52%;
+  left: 7%;
   font-size: 35px;
   animation: floatGentle 18s ease-in-out infinite 2s;
 }
 
 .comet {
-  top: 55%;
-  left: 10%;
+  top: 75%;
+  left: 14%;
   font-size: 38px;
   animation: floatDiagonal 24s ease-in-out infinite 1s;
 }
 
 .planet {
-  top: 70%;
-  left: 10%;
+  top: 20%;
+  left: 3%;
   font-size: 40px;
   animation: floatGentle 26s ease-in-out infinite 4s;
 }
 
 .alien {
-  top: 85%;
-  left: 10%;
+  top: 88%;
+  left: 8%;
   font-size: 36px;
   animation: floatSlow 23s ease-in-out infinite 2s;
 }
 
-/* Right side emojis - evenly spaced vertically and horizontally */
+/* Right side emojis - scattered across the page */
 .saturn {
-  top: 10%;
-  right: 10%;
+  top: 12%;
+  right: 8%;
   font-size: 45px;
   animation: floatSlow 25s ease-in-out infinite;
 }
 
 .sparkles-2 {
-  top: 30%;
-  right: 10%;
+  top: 38%;
+  right: 13%;
   font-size: 30px;
   animation: floatGentle 22s ease-in-out infinite 5s;
 }
 
 .rocket {
-  top: 50%;
-  right: 10%;
+  top: 62%;
+  right: 6%;
   font-size: 40px;
   animation: floatDiagonal 20s ease-in-out infinite;
 }

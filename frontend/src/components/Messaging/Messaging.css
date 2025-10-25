@@ -343,6 +343,65 @@
   font-size: var(--font-size-lg);
 }
 
+/* New Chat Selection Styles */
+.new-chat-selection {
+  padding: var(--space-2xl);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.new-chat-selection h3 {
+  font-size: var(--font-size-2xl);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.new-chat-selection p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xl);
+}
+
+.available-recipients-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.recipient-option {
+  padding: var(--space-lg);
+  background: var(--white);
+  border: 2px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.recipient-option:hover {
+  border-color: var(--primary-blue);
+  background: rgba(59, 130, 246, 0.05);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.recipient-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.recipient-email {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.no-recipients {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--space-2xl);
+  font-style: italic;
+}
+
 .message-header {
   padding: var(--space-lg);
   border-bottom: 1px solid var(--neutral-100);
