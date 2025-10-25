@@ -127,7 +127,7 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-md);
-  background: var(--bg-secondary);
+  background: rgba(59, 130, 246, 0.08);
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
   transition: all var(--transition-base);
@@ -285,12 +285,13 @@
   gap: var(--space-lg);
   width: 100%;
   grid-column: 1 / -1;
+  align-items: stretch;
 }
 
 .quote-alert-row .motivational-card {
   grid-column: auto;
-  min-height: 120px;
   padding: var(--space-2xl);
+  height: 100%;
 }
 
 .quote-alert-row .alert {
@@ -302,8 +303,8 @@
   padding: var(--space-2xl);
   box-shadow: var(--shadow-lg);
   border-left: 4px solid var(--warning-yellow);
-  min-height: 120px;
   color: black;
+  height: 100%;
 }
 
 .quote-alert-row .alert .alert-icon {
