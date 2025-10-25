@@ -117,6 +117,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [assignmentFilter, setAssignmentFilter] = useState('upcoming'); // 'upcoming', 'all'
   const [assignmentSort, setAssignmentSort] = useState('dueDate'); // 'dueDate'
   const [todoSort, setTodoSort] = useState('dueDate'); // 'dueDate'
+  const [quoteKey, setQuoteKey] = useState(0); // For forcing quote regeneration
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -185,6 +186,11 @@ function StudentDashboard({ userId, onLogout }) {
   const motivationalQuote = getMotivationalQuote(avgGrade, riskLevel);
   const studyPlan = generateStudyPlan(avgGrade, completionRate, poorAssignments);
   
+  // Reload quote handler
+  const handleReloadQuote = () => {
+    setQuoteKey(prev => prev + 1);
+  };
+  
   // Filter and sort tasks
   const pendingTasks = studyPlan
     .filter(taskObj => !completedTasks.includes(taskObj.task))
@@ -224,7 +230,10 @@ function StudentDashboard({ userId, onLogout }) {
           <div className="quote-alert-row">
             <div className="motivational-card">
               <div className="quote-icon">💡</div>
-              <p className="quote-text">{motivationalQuote}</p>
+              <p className="quote-text" key={quoteKey}>{motivationalQuote}</p>
+              <button className="reload-quote-btn" onClick={handleReloadQuote} title="Get a new motivational quote">
+                🔄
+              </button>
             </div>
 
             {/* Risk Alert */}
@@ -335,14 +344,16 @@ function StudentDashboard({ userId, onLogout }) {
             {upcoming_assignments.length === 0 ? (
               <p>No upcoming assignments</p>
             ) : (
-              <div className="assignments-list">
+              <div className="upcoming-assignments-list">
                 {upcoming_assignments.map(assignment => (
-                  <div key={assignment.id} className="assignment-item">
-                    <div className="assignment-info">
-                      <strong>{assignment.title}</strong>
-                      <span className="assignment-subject">{assignment.subject}</span>
+                  <div key={assignment.id} className="upcoming-assignment-card">
+                    <div className="upcoming-assignment-header">
+                      <strong className="upcoming-assignment-title">{assignment.title}</strong>
+                      <span className={`subject-bubble subject-${assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {assignment.subject}
+                      </span>
                     </div>
-                    <div className="assignment-due">
+                    <div className="upcoming-assignment-due">
                       Due: {new Date(assignment.due_date).toLocaleDateString()}
                     </div>
                   </div>
@@ -385,7 +396,7 @@ function StudentDashboard({ userId, onLogout }) {
                 value={assignmentFilter} 
                 onChange={(e) => setAssignmentFilter(e.target.value)}
               >
-                <option value="upcoming">Show Upcoming Only</option>
+                <option value="upcoming">Show Upcoming</option>
                 <option value="all">Show All</option>
               </select>
               <select 

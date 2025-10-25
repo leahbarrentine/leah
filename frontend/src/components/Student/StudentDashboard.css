@@ -31,6 +31,27 @@
   font-weight: var(--font-weight-semibold);
   line-height: 1.5;
   margin: 0;
+  flex: 1;
+}
+
+.reload-quote-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reload-quote-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(180deg);
 }
 
 /* Study Plan Card */
@@ -282,10 +303,11 @@
 }
 
 .quote-alert-row .alert .alert-text {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-xl);
   text-align: center;
   margin: 0;
-  line-height: var(--line-height-normal);
+  line-height: 1.5;
+  font-weight: var(--font-weight-semibold);
 }
 
 .dashboard-card {
@@ -629,6 +651,99 @@
 .see-tips-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
+}
+
+/* Upcoming Assignments Styling */
+.upcoming-assignments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.upcoming-assignment-card {
+  padding: var(--space-lg);
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--neutral-300);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.upcoming-assignment-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.upcoming-assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.upcoming-assignment-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.subject-bubble {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Color-coded subject bubbles */
+.subject-bubble.subject-mathematics,
+.subject-bubble.subject-math {
+  background: rgba(59, 130, 246, 0.15);
+  color: #1e40af;
+}
+
+.subject-bubble.subject-science {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+.subject-bubble.subject-english,
+.subject-bubble.subject-literature {
+  background: rgba(168, 85, 247, 0.15);
+  color: #6b21a8;
+}
+
+.subject-bubble.subject-history,
+.subject-bubble.subject-social-studies {
+  background: rgba(234, 88, 12, 0.15);
+  color: #9a3412;
+}
+
+.subject-bubble.subject-art,
+.subject-bubble.subject-music {
+  background: rgba(236, 72, 153, 0.15);
+  color: #9f1239;
+}
+
+.subject-bubble.subject-physical-education,
+.subject-bubble.subject-pe {
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+}
+
+.subject-bubble.subject-computer-science,
+.subject-bubble.subject-technology {
+  background: rgba(6, 182, 212, 0.15);
+  color: #0e7490;
+}
+
+.upcoming-assignment-due {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
 }
 
 @media (max-width: 768px) {

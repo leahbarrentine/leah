@@ -111,6 +111,14 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
     setSelectedConversation(null);
     setSelectedRecipient(null);
   };
+  
+  // Get users not yet chatted with
+  const getAvailableRecipients = () => {
+    const conversationPartnerIds = conversations.map(conv => conv.partner_id);
+    return recipientList.filter(recipient => !conversationPartnerIds.includes(recipient.id));
+  };
+  
+  const availableRecipients = getAvailableRecipients();
 
   if (loading) {
     return <div className="loading">Loading messages...</div>;
@@ -167,18 +175,21 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
               </h3>
               {!selectedRecipient && (
                 <select 
+                  className="recipient-dropdown"
                   value={selectedRecipient?.id || ''} 
                   onChange={(e) => {
-                    const recipient = recipientList.find(r => r.id === parseInt(e.target.value));
-                    setSelectedRecipient({
-                      id: recipient.id,
-                      type: userType === 'student' ? 'teacher' : 'student',
-                      name: recipient.name
-                    });
+                    const recipient = availableRecipients.find(r => r.id === parseInt(e.target.value));
+                    if (recipient) {
+                      setSelectedRecipient({
+                        id: recipient.id,
+                        type: userType === 'student' ? 'teacher' : 'student',
+                        name: recipient.name
+                      });
+                    }
                   }}
                 >
                   <option value="">Select {userType === 'student' ? 'Teacher' : 'Student'}</option>
-                  {recipientList.map(r => (
+                  {availableRecipients.map(r => (
                     <option key={r.id} value={r.id}>{r.name}</option>
                   ))}
                 </select>

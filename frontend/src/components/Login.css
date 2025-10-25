@@ -56,7 +56,7 @@
   50% { transform: translateY(-10px) rotate(5deg); }
 }
 
-/* Doodle decorations */
+/* Doodle decorations - all with animations */
 .doodle {
   position: absolute;
   opacity: 0.5;
@@ -64,118 +64,119 @@
 }
 
 .doodle-star-1 {
-  top: 8%;
-  right: 20%;
+  top: 70%;
+  right: 10%;
   font-size: 35px;
   animation: twinkle 4s ease-in-out infinite 0.5s;
 }
 
 .doodle-star-2 {
-  bottom: 15%;
-  left: 10%;
+  bottom: 10%;
+  right: 10%;
   font-size: 30px;
   animation: twinkle 3.5s ease-in-out infinite 1s;
 }
 
 .doodle-swirl-1 {
-  top: 25%;
-  left: 8%;
+  top: 17%;
+  left: 10%;
   width: 50px;
   height: 50px;
   animation: spin 20s linear infinite;
 }
 
 .doodle-swirl-2 {
-  bottom: 20%;
-  right: 12%;
+  top: 62%;
+  right: 10%;
   width: 45px;
   height: 45px;
   animation: spin 15s linear infinite reverse;
 }
 
 .doodle-smile-1 {
-  top: 60%;
-  right: 8%;
+  top: 47%;
+  left: 10%;
   font-size: 38px;
   animation: bounce 3s ease-in-out infinite;
 }
 
 .doodle-smile-2 {
-  bottom: 30%;
-  left: 5%;
+  top: 22%;
+  right: 10%;
   font-size: 32px;
   animation: bounce 3.5s ease-in-out infinite 0.5s;
 }
 
-/* Space emojis with floating animation */
+/* Space emojis with floating animation - evenly distributed on left and right */
 .space-emoji {
   position: absolute;
   opacity: 0.6;
   pointer-events: none;
 }
 
-.saturn {
-  top: 15%;
-  right: 25%;
-  font-size: 45px;
-  animation: floatSlow 25s ease-in-out infinite;
-}
-
-.rocket {
-  bottom: 35%;
-  right: 15%;
-  font-size: 40px;
-  animation: floatDiagonal 20s ease-in-out infinite;
-}
-
-.sparkles-1 {
-  top: 40%;
-  left: 12%;
-  font-size: 35px;
-  animation: floatGentle 18s ease-in-out infinite 2s;
-}
-
-.sparkles-2 {
-  top: 70%;
-  right: 10%;
-  font-size: 30px;
-  animation: floatGentle 22s ease-in-out infinite 5s;
-}
-
-/* Additional left-side emojis */
+/* Left side emojis - evenly spaced vertically and horizontally */
 .moon {
-  top: 25%;
-  left: 8%;
+  top: 10%;
+  left: 10%;
   font-size: 42px;
   animation: floatSlow 28s ease-in-out infinite 3s;
 }
 
+.telescope {
+  top: 25%;
+  left: 10%;
+  font-size: 34px;
+  animation: floatGentle 20s ease-in-out infinite 6s;
+}
+
+.sparkles-1 {
+  top: 40%;
+  left: 10%;
+  font-size: 35px;
+  animation: floatGentle 18s ease-in-out infinite 2s;
+}
+
 .comet {
-  top: 50%;
-  left: 5%;
+  top: 55%;
+  left: 10%;
   font-size: 38px;
   animation: floatDiagonal 24s ease-in-out infinite 1s;
 }
 
 .planet {
-  top: 65%;
-  left: 15%;
+  top: 70%;
+  left: 10%;
   font-size: 40px;
   animation: floatGentle 26s ease-in-out infinite 4s;
 }
 
 .alien {
-  top: 80%;
-  left: 8%;
+  top: 85%;
+  left: 10%;
   font-size: 36px;
-  animation: bounce 4s ease-in-out infinite 2s;
+  animation: floatSlow 23s ease-in-out infinite 2s;
 }
 
-.telescope {
-  top: 35%;
-  left: 12%;
-  font-size: 34px;
-  animation: floatGentle 20s ease-in-out infinite 6s;
+/* Right side emojis - evenly spaced vertically and horizontally */
+.saturn {
+  top: 10%;
+  right: 10%;
+  font-size: 45px;
+  animation: floatSlow 25s ease-in-out infinite;
+}
+
+.sparkles-2 {
+  top: 30%;
+  right: 10%;
+  font-size: 30px;
+  animation: floatGentle 22s ease-in-out infinite 5s;
+}
+
+.rocket {
+  top: 50%;
+  right: 10%;
+  font-size: 40px;
+  animation: floatDiagonal 20s ease-in-out infinite;
 }
 
 @keyframes floatSlow {
