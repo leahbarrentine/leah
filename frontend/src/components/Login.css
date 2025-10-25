@@ -1,0 +1,247 @@
+/* Import design system */
+@import '../styles/design-system.css';
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--gradient-primary);
+  padding: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative doodles with common style - hand-drawn feel */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: float 20s ease-in-out infinite;
+}
+
+/* Star doodle - top left */
+.login-container::after {
+  content: '⭐';
+  position: absolute;
+  top: 10%;
+  left: 15%;
+  font-size: 40px;
+  opacity: 0.6;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-20px, 20px); }
+}
+
+@keyframes twinkle {
+  0%, 100% { transform: rotate(-5deg) scale(1); opacity: 0.6; }
+  50% { transform: rotate(5deg) scale(1.1); opacity: 0.8; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+/* Doodle decorations */
+.doodle {
+  position: absolute;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.doodle-star-1 {
+  top: 8%;
+  right: 20%;
+  font-size: 35px;
+  animation: twinkle 4s ease-in-out infinite 0.5s;
+}
+
+.doodle-star-2 {
+  bottom: 15%;
+  left: 10%;
+  font-size: 30px;
+  animation: twinkle 3.5s ease-in-out infinite 1s;
+}
+
+.doodle-swirl-1 {
+  top: 25%;
+  left: 8%;
+  width: 50px;
+  height: 50px;
+  animation: spin 20s linear infinite;
+}
+
+.doodle-swirl-2 {
+  bottom: 20%;
+  right: 12%;
+  width: 45px;
+  height: 45px;
+  animation: spin 15s linear infinite reverse;
+}
+
+.doodle-smile-1 {
+  top: 60%;
+  right: 8%;
+  font-size: 38px;
+  animation: bounce 3s ease-in-out infinite;
+}
+
+.doodle-smile-2 {
+  bottom: 30%;
+  left: 5%;
+  font-size: 32px;
+  animation: bounce 3.5s ease-in-out infinite 0.5s;
+}
+
+.login-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 440px;
+  animation: slideUp 0.5s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.login-card h2 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-xs);
+  text-align: center;
+  color: #0056b3;
+  line-height: var(--line-height-tight);
+}
+
+.login-subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  line-height: var(--line-height-normal);
+}
+
+.user-type-selector {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  background: var(--neutral-100);
+  padding: 4px;
+  border-radius: var(--radius-full);
+}
+
+.user-type-button {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
+}
+
+.user-type-button:hover {
+  color: var(--text-primary);
+}
+
+.user-type-button.active {
+  background: var(--white);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  background: var(--white);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2386868B' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.login-button {
+  width: 100%;
+  padding: 16px;
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--white);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+  font-family: var(--font-family);
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  background: var(--neutral-300);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--space-lg);
+  font-size: var(--font-size-base);
+}
