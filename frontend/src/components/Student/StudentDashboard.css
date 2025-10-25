@@ -724,6 +724,48 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.overdue-assignments-section {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 2px solid var(--neutral-100);
+}
+
+.expand-overdue-button {
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--alert-coral-light, #FEE2E2);
+  border: 1px solid var(--alert-coral);
+  border-radius: var(--radius-md);
+  color: var(--alert-coral);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.expand-overdue-button:hover {
+  background: var(--alert-coral);
+  color: var(--white);
+}
+
+.overdue-assignments-list {
+  margin-top: var(--space-md);
+}
+
+.upcoming-assignment-card.overdue {
+  border-left: 4px solid var(--alert-coral);
+  background: var(--alert-coral-light, #FEE2E2);
+}
+
+.overdue-text {
+  color: var(--alert-coral);
+  font-weight: var(--font-weight-bold);
+}
+
 .submitted-assignments-section {
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);

@@ -123,6 +123,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [assignmentContent, setAssignmentContent] = useState(''); // Work content
   const [submissionStatuses, setSubmissionStatuses] = useState({}); // Track submission status for each assignment
   const [showSubmittedAssignments, setShowSubmittedAssignments] = useState(false); // Toggle for submitted assignments section
+  const [showOverdueAssignments, setShowOverdueAssignments] = useState(false); // Toggle for overdue assignments section
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -433,11 +434,24 @@ function StudentDashboard({ userId, onLogout }) {
           <div className="card">
             <h3>Upcoming Assignments</h3>
             {(() => {
-              // Filter out submitted/graded assignments from upcoming
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              
+              // Separate assignments into categories
+              const overdueAssignments = upcoming_assignments.filter(assignment => {
+                const submissionStatus = submissionStatuses[assignment.id];
+                const status = submissionStatus?.status || 'not_started';
+                const dueDate = new Date(assignment.due_date);
+                dueDate.setHours(0, 0, 0, 0);
+                return (status !== 'submitted' && status !== 'graded') && dueDate < today;
+              });
+              
               const activeAssignments = upcoming_assignments.filter(assignment => {
                 const submissionStatus = submissionStatuses[assignment.id];
                 const status = submissionStatus?.status || 'not_started';
-                return status !== 'submitted' && status !== 'graded';
+                const dueDate = new Date(assignment.due_date);
+                dueDate.setHours(0, 0, 0, 0);
+                return (status !== 'submitted' && status !== 'graded') && dueDate >= today;
               });
               
               const submittedAssignments = upcoming_assignments.filter(assignment => {
@@ -448,9 +462,45 @@ function StudentDashboard({ userId, onLogout }) {
               
               return (
                 <>
-                  {activeAssignments.length === 0 ? (
+                  {/* Overdue Assignments Section */}
+                  {overdueAssignments.length > 0 && (
+                    <div className="overdue-assignments-section">
+                      <button 
+                        className="expand-overdue-button"
+                        onClick={() => setShowOverdueAssignments(!showOverdueAssignments)}
+                      >
+                        {showOverdueAssignments ? '▼' : '▶'} ⚠️ Overdue Assignments ({overdueAssignments.length})
+                      </button>
+                      
+                      {showOverdueAssignments && (
+                        <div className="overdue-assignments-list">
+                          {overdueAssignments.map(assignment => {
+                            return (
+                              <div 
+                                key={assignment.id} 
+                                className="upcoming-assignment-card overdue clickable"
+                                onClick={() => handleWorkOnAssignment(assignment)}
+                              >
+                                <div className="upcoming-assignment-header">
+                                  <strong className="upcoming-assignment-title">{assignment.title}</strong>
+                                  <span className={`subject-bubble subject-${assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                                    {assignment.subject}
+                                  </span>
+                                </div>
+                                <div className="upcoming-assignment-due overdue-text">
+                                  Overdue: {new Date(assignment.due_date).toLocaleDateString()}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                
+                  {activeAssignments.length === 0 && overdueAssignments.length === 0 ? (
                     <p>No upcoming assignments</p>
-                  ) : (
+                  ) : activeAssignments.length > 0 && (
                     <div className="upcoming-assignments-list">
                       {activeAssignments.map(assignment => {
                         const submissionStatus = submissionStatuses[assignment.id];
@@ -484,7 +534,7 @@ function StudentDashboard({ userId, onLogout }) {
                         className="expand-submitted-button"
                         onClick={() => setShowSubmittedAssignments(!showSubmittedAssignments)}
                       >
-                        {showSubmittedAssignments ? '▼' : '▶'} Submitted Assignments ({submittedAssignments.length})
+                        {showSubmittedAssignments ? '▼' : '▶'} Submitted Assignments ({submittedAssignments.length}) 🎉
                       </button>
                       
                       {showSubmittedAssignments && (

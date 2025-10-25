@@ -27,6 +27,8 @@ function TeacherDashboard({ userId, onLogout }) {
   const [gradingQueue, setGradingQueue] = useState([]);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [gradeInput, setGradeInput] = useState('');
+  const [showNotSubmitted, setShowNotSubmitted] = useState(false);
+  const [reminderModal, setReminderModal] = useState(null); // { student, assignment, dueDate }
 
   useEffect(() => {
     loadDashboard();
@@ -154,6 +156,26 @@ function TeacherDashboard({ userId, onLogout }) {
     } catch (error) {
       console.error('Error sending feedback:', error);
       alert('Failed to send feedback. Please try again.');
+    }
+  };
+
+  const handleSendReminder = async () => {
+    if (!reminderModal) return;
+    
+    try {
+      const { messageAPI } = await import('../../api');
+      await messageAPI.sendMessage({
+        sender_id: userId,
+        sender_type: 'teacher',
+        recipient_id: reminderModal.student.id,
+        recipient_type: 'student',
+        content: reminderModal.message
+      });
+      alert(`Reminder sent to ${reminderModal.student.name}!`);
+      setReminderModal(null);
+    } catch (error) {
+      console.error('Error sending reminder:', error);
+      alert('Failed to send reminder. Please try again.');
     }
   };
 
@@ -811,11 +833,23 @@ function TeacherDashboard({ userId, onLogout }) {
           <h2>Grading Window</h2>
           <p className="section-description">Review and grade submitted student work</p>
           
-          {gradingQueue.length === 0 ? (
-            <div className="empty-state">
-              <p>No submissions to grade at this time. Great job staying on top of grading!</p>
-            </div>
-          ) : selectedSubmission ? (
+          {(() => {
+            // Separate submitted from not submitted assignments
+            const submittedQueue = gradingQueue.filter(submission => 
+              submission.grade.submission_status === 'submitted'
+            );
+            const notSubmittedQueue = gradingQueue.filter(submission => 
+              submission.grade.submission_status === 'not_started' || 
+              submission.grade.submission_status === 'in_progress'
+            );
+            
+            return (
+              <>
+                {submittedQueue.length === 0 && notSubmittedQueue.length === 0 ? (
+                  <div className="empty-state">
+                    <p>No submissions to grade at this time. Great job staying on top of grading!</p>
+                  </div>
+                ) : selectedSubmission ? (
             <div className="grading-interface">
               <button className="back-button" onClick={() => setSelectedSubmission(null)}>
                 ← Back to Queue
@@ -879,31 +913,125 @@ function TeacherDashboard({ userId, onLogout }) {
               </div>
             </div>
           ) : (
-            <div className="grading-queue-list">
-              {gradingQueue.map((submission, index) => (
-                <div key={index} className="queue-item" onClick={() => {
-                  setSelectedSubmission(submission);
-                  setGradeInput('');
-                }}>
-                  <div className="queue-item-header">
-                    <h3>{submission.assignment.title}</h3>
-                    <span className="subject-badge">{submission.assignment.subject}</span>
+            <>
+              {/* Needs Grading - Submitted Assignments */}
+              {submittedQueue.length > 0 && (
+                <div className="submitted-queue-section">
+                  <h3 className="queue-section-title">Needs Grading ({submittedQueue.length})</h3>
+                  <div className="grading-queue-list">
+                    {submittedQueue.map((submission, index) => (
+                      <div key={index} className="queue-item" onClick={() => {
+                        setSelectedSubmission(submission);
+                        setGradeInput('');
+                      }}>
+                        <div className="queue-item-header">
+                          <h3>{submission.assignment.title}</h3>
+                          <span className="subject-badge">{submission.assignment.subject}</span>
+                        </div>
+                        <div className="queue-item-details">
+                          <div className="detail">
+                            <span className="label">Student:</span>
+                            <span className="value">{submission.student.name}</span>
+                          </div>
+                          <div className="detail">
+                            <span className="label">Submitted:</span>
+                            <span className="value">{new Date(submission.grade.submitted_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <button className="grade-button">Grade Assignment →</button>
+                      </div>
+                    ))}
                   </div>
-                  <div className="queue-item-details">
-                    <div className="detail">
-                      <span className="label">Student:</span>
-                      <span className="value">{submission.student.name}</span>
-                    </div>
-                    <div className="detail">
-                      <span className="label">Submitted:</span>
-                      <span className="value">{new Date(submission.grade.submitted_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <button className="grade-button">Grade Assignment →</button>
                 </div>
-              ))}
-            </div>
+              )}
+
+              {/* Not Submitted - Collapsible Section */}
+              {notSubmittedQueue.length > 0 && (
+                <div className="not-submitted-section">
+                  <button 
+                    className="expand-not-submitted-button"
+                    onClick={() => setShowNotSubmitted(!showNotSubmitted)}
+                  >
+                    {showNotSubmitted ? '▼' : '▶'} Not Submitted ({notSubmittedQueue.length})
+                  </button>
+                  
+                  {showNotSubmitted && (
+                    <div className="not-submitted-list">
+                      {notSubmittedQueue.map((submission, index) => {
+                        const dueDate = new Date(submission.assignment.due_date);
+                        const currentDate = new Date();
+                        const diffTime = dueDate - currentDate;
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        const isOverdue = diffDays < 0;
+                        
+                        return (
+                          <div key={index} className="not-submitted-item">
+                            <div className="not-submitted-header">
+                              <h3>{submission.assignment.title}</h3>
+                              <span className="subject-badge">{submission.assignment.subject}</span>
+                            </div>
+                            <div className="not-submitted-details">
+                              <div className="detail">
+                                <span className="label">Student:</span>
+                                <span className="value">{submission.student.name}</span>
+                              </div>
+                              <div className="detail">
+                                <span className="label">Status:</span>
+                                <span className="value status-not-submitted">
+                                  {submission.grade.submission_status === 'in_progress' ? 'In Progress' : 'Not Started'}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            {/* Reminder Box */}
+                            <div className="reminder-box">
+                              <h4>Send Reminder</h4>
+                              <div className="reminder-dates">
+                                <div className="date-info">
+                                  <span className="date-label">Due Date:</span>
+                                  <span className="date-value">{dueDate.toLocaleDateString()}</span>
+                                </div>
+                                <div className="date-info">
+                                  <span className="date-label">Current Date:</span>
+                                  <span className="date-value">{currentDate.toLocaleDateString()}</span>
+                                </div>
+                                <div className="date-info">
+                                  <span className="date-label">{isOverdue ? 'Days Overdue:' : 'Days to Finish:'}</span>
+                                  <span className={`date-value ${isOverdue ? 'overdue' : 'upcoming'}`}>
+                                    {isOverdue ? Math.abs(diffDays) : diffDays} days
+                                  </span>
+                                </div>
+                              </div>
+                              <button 
+                                className="send-reminder-btn"
+                                onClick={() => {
+                                  const reminderMessage = isOverdue
+                                    ? `Hi ${submission.student.name}, I noticed that ${submission.assignment.title} is now ${Math.abs(diffDays)} days overdue. Please submit your work as soon as possible. Let me know if you need any help or an extension.`
+                                    : `Hi ${submission.student.name}, this is a gentle reminder that ${submission.assignment.title} is due in ${diffDays} days (${dueDate.toLocaleDateString()}). Please make sure to submit your work on time. Let me know if you have any questions!`;
+                                  
+                                  setReminderModal({
+                                    student: submission.student,
+                                    assignment: submission.assignment,
+                                    dueDate: dueDate,
+                                    message: reminderMessage
+                                  });
+                                }}
+                              >
+                                Send Reminder
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
+              </>
+            );
+          })()}
         </div>
       )}
 
@@ -926,6 +1054,32 @@ function TeacherDashboard({ userId, onLogout }) {
                 Send Feedback
               </button>
               <button className="button button-secondary" onClick={() => setFeedbackModal(null)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reminder Modal */}
+      {reminderModal && (
+        <div className="modal-overlay" onClick={() => setReminderModal(null)}>
+          <div className="modal-content feedback-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Send Reminder to {reminderModal.student.name}</h3>
+            <p className="feedback-instructions">
+              Customize the reminder message below before sending.
+            </p>
+            <textarea
+              className="feedback-textarea"
+              value={reminderModal.message}
+              onChange={(e) => setReminderModal({...reminderModal, message: e.target.value})}
+              rows={6}
+            />
+            <div className="modal-actions">
+              <button className="button button-primary" onClick={handleSendReminder}>
+                Send Reminder
+              </button>
+              <button className="button button-secondary" onClick={() => setReminderModal(null)}>
                 Cancel
               </button>
             </div>

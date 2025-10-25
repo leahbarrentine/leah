@@ -1274,6 +1274,155 @@
   margin: 0;
 }
 
+/* Teacher Grading Queue Sections */
+.queue-section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.submitted-queue-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.not-submitted-section {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 2px solid var(--neutral-100);
+}
+
+.expand-not-submitted-button {
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.expand-not-submitted-button:hover {
+  background: var(--neutral-100);
+  border-color: var(--primary-blue);
+  color: var(--text-primary);
+}
+
+.not-submitted-list {
+  margin-top: var(--space-lg);
+}
+
+.not-submitted-item {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--alert-coral);
+}
+
+.not-submitted-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.not-submitted-header h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.not-submitted-details {
+  display: flex;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.status-not-submitted {
+  color: var(--alert-coral);
+  font-weight: var(--font-weight-semibold);
+}
+
+.reminder-box {
+  background: var(--neutral-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.reminder-box h4 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.reminder-dates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.date-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) 0;
+}
+
+.date-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.date-value {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.date-value.overdue {
+  color: var(--alert-coral);
+  font-weight: var(--font-weight-bold);
+}
+
+.date-value.upcoming {
+  color: var(--success-green);
+  font-weight: var(--font-weight-semibold);
+}
+
+.send-reminder-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
+}
+
+.send-reminder-btn:hover {
+  background: #005BB5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.4);
+}
+
 @media (max-width: 1400px) {
   .performance-grid {
     grid-template-columns: repeat(2, 1fr);
