@@ -435,19 +435,30 @@ function StudentDashboard({ userId, onLogout }) {
               <p>No upcoming assignments</p>
             ) : (
               <div className="upcoming-assignments-list">
-                {upcoming_assignments.map(assignment => (
-                  <div key={assignment.id} className="upcoming-assignment-card">
-                    <div className="upcoming-assignment-header">
-                      <strong className="upcoming-assignment-title">{assignment.title}</strong>
-                      <span className={`subject-bubble subject-${assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
-                        {assignment.subject}
-                      </span>
+                {upcoming_assignments.map(assignment => {
+                  const submissionStatus = submissionStatuses[assignment.id];
+                  const status = submissionStatus?.status || 'not_started';
+                  const canWorkOn = status !== 'submitted' && status !== 'graded';
+                  
+                  return (
+                    <div 
+                      key={assignment.id} 
+                      className={`upcoming-assignment-card ${canWorkOn ? 'clickable' : 'completed'}`}
+                      onClick={() => canWorkOn && handleWorkOnAssignment(assignment)}
+                    >
+                      <div className="upcoming-assignment-header">
+                        <strong className="upcoming-assignment-title">{assignment.title}</strong>
+                        <span className={`subject-bubble subject-${assignment.subject.toLowerCase().replace(/\s+/g, '-')}`}>
+                          {assignment.subject}
+                        </span>
+                      </div>
+                      <div className="upcoming-assignment-due">
+                        Due: {new Date(assignment.due_date).toLocaleDateString()}
+                        {!canWorkOn && <span className="assignment-status-badge">Submitted</span>}
+                      </div>
                     </div>
-                    <div className="upcoming-assignment-due">
-                      Due: {new Date(assignment.due_date).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

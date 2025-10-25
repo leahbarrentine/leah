@@ -699,9 +699,29 @@
   box-shadow: var(--shadow-sm);
 }
 
-.upcoming-assignment-card:hover {
+.upcoming-assignment-card.clickable {
+  cursor: pointer;
+}
+
+.upcoming-assignment-card.clickable:hover {
   box-shadow: var(--shadow-md);
   transform: translateX(4px);
+  border-left-color: var(--primary-blue);
+}
+
+.upcoming-assignment-card.completed {
+  opacity: 0.7;
+  background: var(--neutral-50);
+}
+
+.assignment-status-badge {
+  margin-left: var(--space-sm);
+  padding: 4px 10px;
+  background: var(--success-green);
+  color: white;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .upcoming-assignment-header {
