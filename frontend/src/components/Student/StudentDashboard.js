@@ -954,8 +954,6 @@ function StudentDashboard({ userId, onLogout }) {
             </div>
           </div>
         )}
-        </div>
-      )}
 
       {/* Assignment Work Modal */}
       {workingAssignment && (
