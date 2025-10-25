@@ -17,6 +17,13 @@ function TeacherDashboard({ userId, onLogout }) {
   const [allStudents, setAllStudents] = useState([]);
   const [allStudentsPerformance, setAllStudentsPerformance] = useState({});
   const [feedbackModal, setFeedbackModal] = useState(null); // { student, subject, message }
+  const [showAllTasks, setShowAllTasks] = useState(false);
+  const [showAllCompleted, setShowAllCompleted] = useState(false);
+  const [expandedRiskLevels, setExpandedRiskLevels] = useState({
+    high: false,
+    medium: false,
+    low: false
+  });
 
   useEffect(() => {
     loadDashboard();
@@ -98,6 +105,20 @@ function TeacherDashboard({ userId, onLogout }) {
   }
 
   const { teacher, at_risk_students, classes } = dashboard;
+  
+  // Calculate risk level counts
+  const riskCounts = {
+    high: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'high').length,
+    medium: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'medium').length,
+    low: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'low').length
+  };
+  
+  // Group students by risk level
+  const studentsByRisk = {
+    high: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'high'),
+    medium: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'medium'),
+    low: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'low')
+  };
   
   // Generate grading plan tasks with categories and deadlines
   const gradingTasks = [];
@@ -229,7 +250,7 @@ function TeacherDashboard({ userId, onLogout }) {
                 <>
                   <h4 className="section-title">To Do</h4>
                   <div className="grading-checklist">
-                    {pendingGradingTasks.map((task, idx) => (
+                    {pendingGradingTasks.slice(0, showAllTasks ? pendingGradingTasks.length : 3).map((task, idx) => (
                       <div 
                         key={idx} 
                         className="checklist-item clickable"
@@ -250,6 +271,14 @@ function TeacherDashboard({ userId, onLogout }) {
                       </div>
                     ))}
                   </div>
+                  {pendingGradingTasks.length > 3 && (
+                    <button 
+                      className="expand-button"
+                      onClick={() => setShowAllTasks(!showAllTasks)}
+                    >
+                      {showAllTasks ? 'Show Less' : `Show ${pendingGradingTasks.length - 3} More`}
+                    </button>
+                  )}
                 </>
               )}
               
@@ -257,7 +286,7 @@ function TeacherDashboard({ userId, onLogout }) {
                 <>
                   <h4 className="section-title completed-section">Completed</h4>
                   <div className="grading-checklist completed">
-                    {completedTaskObjects.map((task, idx) => (
+                    {completedTaskObjects.slice(0, showAllCompleted ? completedTaskObjects.length : 3).map((task, idx) => (
                       <div 
                         key={idx} 
                         className="checklist-item completed clickable"
@@ -278,8 +307,55 @@ function TeacherDashboard({ userId, onLogout }) {
                       </div>
                     ))}
                   </div>
+                  {completedTaskObjects.length > 3 && (
+                    <button 
+                      className="expand-button"
+                      onClick={() => setShowAllCompleted(!showAllCompleted)}
+                    >
+                      {showAllCompleted ? 'Show Less' : `Show ${completedTaskObjects.length - 3} More`}
+                    </button>
+                  )}
                 </>
               )}
+            </div>
+          )}
+        
+          {/* Risk Level Summary */}
+          {at_risk_students && at_risk_students.length > 0 && (
+            <div className="risk-summary-section">
+              <h3>At-Risk Students Summary</h3>
+              <div className="risk-counters">
+                <div 
+                  className="risk-counter high-risk-counter"
+                  onClick={() => setExpandedRiskLevels({...expandedRiskLevels, high: !expandedRiskLevels.high})}
+                >
+                  <div className="counter-content">
+                    <span className="counter-number">{riskCounts.high}</span>
+                    <span className="counter-label">High Risk</span>
+                  </div>
+                  <span className="expand-icon">{expandedRiskLevels.high ? '▼' : '▶'}</span>
+                </div>
+                <div 
+                  className="risk-counter medium-risk-counter"
+                  onClick={() => setExpandedRiskLevels({...expandedRiskLevels, medium: !expandedRiskLevels.medium})}
+                >
+                  <div className="counter-content">
+                    <span className="counter-number">{riskCounts.medium}</span>
+                    <span className="counter-label">Medium Risk</span>
+                  </div>
+                  <span className="expand-icon">{expandedRiskLevels.medium ? '▼' : '▶'}</span>
+                </div>
+                <div 
+                  className="risk-counter low-risk-counter"
+                  onClick={() => setExpandedRiskLevels({...expandedRiskLevels, low: !expandedRiskLevels.low})}
+                >
+                  <div className="counter-content">
+                    <span className="counter-number">{riskCounts.low}</span>
+                    <span className="counter-label">Low Risk</span>
+                  </div>
+                  <span className="expand-icon">{expandedRiskLevels.low ? '▼' : '▶'}</span>
+                </div>
+              </div>
             </div>
           )}
         
@@ -290,9 +366,14 @@ function TeacherDashboard({ userId, onLogout }) {
               </p>
             </div>
           ) : (
-            <div className="dashboard-grid">
-              {at_risk_students.map(({ student, prediction }) => (
-                <div key={student.id} className={`at-risk-card ${prediction.risk_level === 'high' ? 'high-risk' : prediction.risk_level === 'medium' ? 'medium-risk' : 'low-risk'}`}>
+            <>
+              {/* High Risk Students */}
+              {expandedRiskLevels.high && studentsByRisk.high.length > 0 && (
+                <div className="risk-section">
+                  <h3 className="risk-section-title high-risk-title">High Risk Students</h3>
+                  <div className="dashboard-grid">
+              {studentsByRisk.high.map(({ student, prediction }) => (
+                <div key={student.id} className="at-risk-card high-risk">
                   <div className="student-info">
                     <div>
                       <div className="student-name">{student.name}</div>
@@ -390,7 +471,130 @@ function TeacherDashboard({ userId, onLogout }) {
                   </button>
                 </div>
               ))}
-            </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Medium Risk Students */}
+              {expandedRiskLevels.medium && studentsByRisk.medium.length > 0 && (
+                <div className="risk-section">
+                  <h3 className="risk-section-title medium-risk-title">Medium Risk Students</h3>
+                  <div className="dashboard-grid">
+                    {studentsByRisk.medium.map(({ student, prediction }) => (
+                      <div key={student.id} className="at-risk-card medium-risk">
+                        <div className="student-info">
+                          <div>
+                            <div className="student-name">{student.name}</div>
+                            <div className="student-email">{student.email}</div>
+                          </div>
+                          <span className={`risk-badge ${prediction.risk_level}`}>
+                            {prediction.risk_level} risk
+                          </span>
+                        </div>
+
+                        {prediction.declining && (
+                          <div className="performance-alert">
+                            Performance declining by {(prediction.decline_percentage * 100).toFixed(1)}%
+                          </div>
+                        )}
+
+                        {studentPerformance[student.id] && (
+                          <div className="performance-chart-container">
+                            <h4>Performance Trend</h4>
+                            <PerformanceChart data={studentPerformance[student.id]} />
+                          </div>
+                        )}
+
+                        {prediction.current_performance && (
+                          <div className="performance-metrics">
+                            <div className="metric">
+                              <span className="metric-label">Average Grade</span>
+                              <span className="metric-value">
+                                {prediction.current_performance.avg_grade ? 
+                                  `${prediction.current_performance.avg_grade.toFixed(1)}%` : 'N/A'}
+                              </span>
+                            </div>
+                            <div className="metric">
+                              <span className="metric-label">Completion</span>
+                              <span className="metric-value">
+                                {(prediction.current_performance.completion_rate * 100).toFixed(0)}%
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        <button 
+                          className="button-primary"
+                          onClick={() => setSelectedStudent(student)}
+                        >
+                          Send Message
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Low Risk Students */}
+              {expandedRiskLevels.low && studentsByRisk.low.length > 0 && (
+                <div className="risk-section">
+                  <h3 className="risk-section-title low-risk-title">Low Risk Students</h3>
+                  <div className="dashboard-grid">
+                    {studentsByRisk.low.map(({ student, prediction }) => (
+                      <div key={student.id} className="at-risk-card low-risk">
+                        <div className="student-info">
+                          <div>
+                            <div className="student-name">{student.name}</div>
+                            <div className="student-email">{student.email}</div>
+                          </div>
+                          <span className={`risk-badge ${prediction.risk_level}`}>
+                            {prediction.risk_level} risk
+                          </span>
+                        </div>
+
+                        {prediction.declining && (
+                          <div className="performance-alert">
+                            Performance declining by {(prediction.decline_percentage * 100).toFixed(1)}%
+                          </div>
+                        )}
+
+                        {studentPerformance[student.id] && (
+                          <div className="performance-chart-container">
+                            <h4>Performance Trend</h4>
+                            <PerformanceChart data={studentPerformance[student.id]} />
+                          </div>
+                        )}
+
+                        {prediction.current_performance && (
+                          <div className="performance-metrics">
+                            <div className="metric">
+                              <span className="metric-label">Average Grade</span>
+                              <span className="metric-value">
+                                {prediction.current_performance.avg_grade ? 
+                                  `${prediction.current_performance.avg_grade.toFixed(1)}%` : 'N/A'}
+                              </span>
+                            </div>
+                            <div className="metric">
+                              <span className="metric-label">Completion</span>
+                              <span className="metric-value">
+                                {(prediction.current_performance.completion_rate * 100).toFixed(0)}%
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        <button 
+                          className="button-primary"
+                          onClick={() => setSelectedStudent(student)}
+                        >
+                          Send Message
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
@@ -431,6 +635,37 @@ function TeacherDashboard({ userId, onLogout }) {
                           <span className="detail-value status-pending">Needs Grading</span>
                         </div>
                       </div>
+                      
+                      <div className="suggested-feedback">
+                        <strong>Suggested Feedback:</strong>
+                        <p className="feedback-text">
+                          {subject.grade && subject.grade < 60 
+                            ? `I noticed you're having difficulty with ${subject.assignment}. Let's schedule time to review the core concepts together. Would you like to meet during office hours this week?`
+                            : subject.grade && subject.grade < 75
+                            ? `You're making progress on ${subject.assignment}, but there's room for improvement. Consider reviewing the material and attempting some practice problems. I'm here if you need help!`
+                            : `Good effort on ${subject.assignment}! To reach the next level, focus on [specific concept]. Keep up the good work!`
+                          }
+                        </p>
+                        <button 
+                          className="send-feedback-btn"
+                          onClick={() => {
+                            const feedbackMessage = subject.grade && subject.grade < 60 
+                              ? `I noticed you're having difficulty with ${subject.assignment}. Let's schedule time to review the core concepts together. Would you like to meet during office hours this week?`
+                              : subject.grade && subject.grade < 75
+                              ? `You're making progress on ${subject.assignment}, but there's room for improvement. Consider reviewing the material and attempting some practice problems. I'm here if you need help!`
+                              : `Good effort on ${subject.assignment}! To reach the next level, focus on [specific concept]. Keep up the good work!`;
+                            
+                            setFeedbackModal({
+                              student,
+                              subject,
+                              message: feedbackMessage
+                            });
+                          }}
+                        >
+                          Send Feedback
+                        </button>
+                      </div>
+                      
                       <button className="grade-button">Grade Assignment</button>
                     </div>
                   ))
