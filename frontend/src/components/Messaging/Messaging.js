@@ -17,18 +17,25 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
   }, [userId, userType]);
 
   useEffect(() => {
-    if (preSelectedRecipient) {
+    if (preSelectedRecipient && conversations.length > 0) {
       setSelectedRecipient(preSelectedRecipient);
       // Find or create conversation with this recipient
       const conv = conversations.find(c => 
         c.partner_id === preSelectedRecipient.id && 
         c.partner_type === preSelectedRecipient.type
       );
-      setSelectedConversation(conv || {
-        partner_id: preSelectedRecipient.id,
-        partner_type: preSelectedRecipient.type,
-        messages: []
-      });
+      
+      if (conv) {
+        // Automatically select the existing conversation
+        selectConversation(conv);
+      } else {
+        // Create new conversation if none exists
+        setSelectedConversation({
+          partner_id: preSelectedRecipient.id,
+          partner_type: preSelectedRecipient.type,
+          messages: []
+        });
+      }
     }
   }, [preSelectedRecipient, conversations]);
 
