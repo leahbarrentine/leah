@@ -318,7 +318,7 @@ function StudentDashboard({ userId, onLogout }) {
       {activeTab === 'overview' && (
         <div className="dashboard-grid">
 
-          {/* Motivational Quote and Performance Alert Row */}
+          {/* Motivational Quote and Performance Status Row */}
           <div className="quote-alert-row">
             <div className="motivational-card">
               <div className="quote-icon">💡</div>
@@ -328,18 +328,24 @@ function StudentDashboard({ userId, onLogout }) {
               </button>
             </div>
 
-            {/* Risk Alert */}
-            {riskLevel !== 'low' && (
-              <div className={`alert alert-${riskLevel === 'high' ? 'danger' : 'warning'}`}>
-                <div className="alert-icon">‼️</div>
-                <p className="alert-text">
-                  <strong>Performance Alert:</strong> {riskLevel === 'high' ? 'Your performance has declined significantly.' : 'Your performance shows some decline.'}
-                  {prediction.declining && (
-                    <span> Your grades have decreased by {(prediction.decline_percentage * 100).toFixed(1)}% this week.</span>
-                  )}
-                </p>
+            {/* Performance Status - Always shown */}
+            <div className={`alert alert-${riskLevel === 'high' ? 'danger' : riskLevel === 'medium' ? 'warning' : 'success'}`}>
+              <div className="alert-icon">
+                {riskLevel === 'high' ? '‼️' : riskLevel === 'medium' ? '⚠️' : '✓'}
               </div>
-            )}
+              <p className="alert-text">
+                <strong>Performance Status:</strong> {
+                  riskLevel === 'high' 
+                    ? 'Your performance has declined significantly.' 
+                    : riskLevel === 'medium' 
+                    ? 'You could improve!' 
+                    : "You're good to go!"
+                }
+                {prediction.declining && riskLevel === 'high' && (
+                  <span> Your grades have decreased by {(prediction.decline_percentage * 100).toFixed(1)}% this week.</span>
+                )}
+              </p>
+            </div>
           </div>
           
           {/* Study Plan */}

@@ -781,6 +781,18 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.student-name-link {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.student-name-link:hover {
+  color: var(--accent-purple);
+  text-decoration: none;
+}
+
 .grade-button {
   width: 100%;
   padding: 12px 24px;

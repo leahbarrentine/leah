@@ -925,11 +925,19 @@ function TeacherDashboard({ userId, onLogout }) {
                         </div>
                         <div className="queue-item-details">
                           <div className="detail">
-                            <span className="label">Student:</span>
-                            <span className="value">{submission.student.name}</span>
+                            <span className="label">Student: </span>
+                            <span 
+                              className="value student-name-link"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedStudent(submission.student);
+                              }}
+                            >
+                              {submission.student.name}
+                            </span>
                           </div>
                           <div className="detail">
-                            <span className="label">Submitted:</span>
+                            <span className="label">Submitted: </span>
                             <span className="value">{new Date(submission.grade.submitted_at).toLocaleDateString()}</span>
                           </div>
                         </div>
@@ -967,11 +975,19 @@ function TeacherDashboard({ userId, onLogout }) {
                             </div>
                             <div className="not-submitted-details">
                               <div className="detail">
-                                <span className="label">Student:</span>
-                                <span className="value">{submission.student.name}</span>
+                                <span className="label">Student: </span>
+                                <span 
+                                  className="value student-name-link"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedStudent(submission.student);
+                                  }}
+                                >
+                                  {submission.student.name}
+                                </span>
                               </div>
                               <div className="detail">
-                                <span className="label">Status:</span>
+                                <span className="label">Status: </span>
                                 <span className="value status-not-submitted">
                                   {submission.grade.submission_status === 'in_progress' ? 'In Progress' : 'Not Started'}
                                 </span>

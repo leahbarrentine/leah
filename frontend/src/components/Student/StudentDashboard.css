@@ -302,9 +302,20 @@
   background: var(--white);
   padding: var(--space-2xl);
   box-shadow: var(--shadow-lg);
-  border-left: 4px solid var(--warning-yellow);
   color: black;
   height: 100%;
+}
+
+.quote-alert-row .alert.alert-danger {
+  border-left: 4px solid var(--alert-coral);
+}
+
+.quote-alert-row .alert.alert-warning {
+  border-left: 4px solid var(--warning-amber);
+}
+
+.quote-alert-row .alert.alert-success {
+  border-left: 4px solid var(--success-green);
 }
 
 .quote-alert-row .alert .alert-icon {
