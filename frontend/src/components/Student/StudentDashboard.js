@@ -495,24 +495,59 @@ function StudentDashboard({ userId, onLogout }) {
             {recent_feedback_messages && recent_feedback_messages.length > 0 && (
               <>
                 <h4 className="subsection-title">Recent Teacher Feedback</h4>
-                <div className="feedback-messages-list">
-                  {recent_feedback_messages.slice(0, 3).filter((msg, index) => !closedFeedback.includes(index)).map((msg, index) => {
-                    // Try to detect if feedback mentions a specific assignment
-                    const assignmentMatch = assignments_with_grades.find(item => 
-                      msg.content.toLowerCase().includes(item.assignment.title.toLowerCase())
-                    );
-                    
-                    const isResolved = resolvedFeedback.includes(index);
-                    
-                    return (
-                      <div key={index} className="feedback-message-item">
-                        <div className="feedback-header">
-                          <strong>{msg.teacher_name}</strong>
-                          <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
-                        </div>
-                        <p className="feedback-content">{msg.content}</p>
-                        {isResolved ? (
-                          <div className="feedback-resolved">
+                {recent_feedback_messages.slice(0, 3).filter((msg, index) => !closedFeedback.includes(index)).length === 0 ? (
+                  <p className="no-new-feedback">No new feedback for now</p>
+                ) : (
+                  <div className="feedback-messages-list">
+                    {recent_feedback_messages.slice(0, 3).filter((msg, index) => !closedFeedback.includes(index)).map((msg, index) => {
+                      // Try to detect if feedback mentions a specific assignment
+                      const assignmentMatch = assignments_with_grades.find(item => 
+                        msg.content.toLowerCase().includes(item.assignment.title.toLowerCase())
+                      );
+                      
+                      const isResolved = resolvedFeedback.includes(index);
+                      
+                      return (
+                        <div key={index} className="feedback-message-item">
+                          <div className="feedback-header">
+                            <strong>{msg.teacher_name}</strong>
+                            <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
+                          </div>
+                          <p className="feedback-content">{msg.content}</p>
+                          <div className="feedback-actions-row">
+                            {!isResolved && (
+                              <div className="feedback-actions">
+                                <button 
+                                  className="feedback-action-btn see-more-btn"
+                                  onClick={() => {
+                                    markFeedbackAsResolved(index);
+                                    setActiveTab('messages');
+                                    // Store teacher info for Messaging component to use
+                                    sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
+                                      id: msg.teacher_id,
+                                      name: msg.teacher_name
+                                    }));
+                                  }}
+                                >
+                                  See More
+                                </button>
+                                <button 
+                                  className="feedback-action-btn take-action-btn"
+                                  onClick={() => {
+                                    if (assignmentMatch) {
+                                      // If feedback mentions specific assignment, open submission window
+                                      markFeedbackAsResolved(index);
+                                      handleWorkOnAssignment(assignmentMatch.assignment);
+                                    } else {
+                                      // If it's general feedback, show acknowledgment modal
+                                      setFeedbackModal({ feedback: msg, index });
+                                    }
+                                  }}
+                                >
+                                  Take Action
+                                </button>
+                              </div>
+                            )}
                             <button 
                               className="close-feedback-btn"
                               onClick={() => closeFeedback(index)}
@@ -520,43 +555,11 @@ function StudentDashboard({ userId, onLogout }) {
                               Close
                             </button>
                           </div>
-                        ) : (
-                          <div className="feedback-actions">
-                            <button 
-                              className="feedback-action-btn see-more-btn"
-                              onClick={() => {
-                                markFeedbackAsResolved(index);
-                                setActiveTab('messages');
-                                // Store teacher info for Messaging component to use
-                                sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
-                                  id: msg.teacher_id,
-                                  name: msg.teacher_name
-                                }));
-                              }}
-                            >
-                              See More
-                            </button>
-                            <button 
-                              className="feedback-action-btn take-action-btn"
-                              onClick={() => {
-                                if (assignmentMatch) {
-                                  // If feedback mentions specific assignment, open submission window
-                                  markFeedbackAsResolved(index);
-                                  handleWorkOnAssignment(assignmentMatch.assignment);
-                                } else {
-                                  // If it's general feedback, show acknowledgment modal
-                                  setFeedbackModal({ feedback: msg, index });
-                                }
-                              }}
-                            >
-                              Take Action
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
                 
                 {/* Closed Feedback Section */}
                 {recent_feedback_messages.filter((msg, index) => closedFeedback.includes(index)).length > 0 && (

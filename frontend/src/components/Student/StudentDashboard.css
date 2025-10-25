@@ -463,6 +463,27 @@
   font-style: italic;
 }
 
+.no-new-feedback {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-secondary);
+  font-style: italic;
+  background: var(--neutral-50);
+  border-radius: var(--radius-md);
+}
+
+.feedback-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.feedback-actions-row .feedback-actions {
+  flex: 1;
+}
+
 .assignment-details {
   display: flex;
   flex-direction: column;
