@@ -130,6 +130,12 @@ function StudentDashboard({ userId, onLogout }) {
     const saved = localStorage.getItem(`resolvedFeedback_${userId}`);
     return saved ? JSON.parse(saved) : [];
   });
+  const [closedFeedback, setClosedFeedback] = useState(() => {
+    // Load closed feedback from localStorage
+    const saved = localStorage.getItem(`closedFeedback_${userId}`);
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showClosedFeedback, setShowClosedFeedback] = useState(false);
   const [feedbackModal, setFeedbackModal] = useState(null); // { feedback: msg, index: number }
   
   // Helper function to get performance class
@@ -158,9 +164,19 @@ function StudentDashboard({ userId, onLogout }) {
     localStorage.setItem(`resolvedFeedback_${userId}`, JSON.stringify(resolvedFeedback));
   }, [resolvedFeedback, userId]);
   
+  // Save closed feedback to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(`closedFeedback_${userId}`, JSON.stringify(closedFeedback));
+  }, [closedFeedback, userId]);
+  
   // Function to mark feedback as resolved
   const markFeedbackAsResolved = (feedbackIndex) => {
     setResolvedFeedback(prev => [...prev, feedbackIndex]);
+  };
+  
+  // Function to close feedback
+  const closeFeedback = (feedbackIndex) => {
+    setClosedFeedback(prev => [...prev, feedbackIndex]);
   };
 
   const loadDashboard = async () => {
@@ -480,7 +496,7 @@ function StudentDashboard({ userId, onLogout }) {
               <>
                 <h4 className="subsection-title">Recent Teacher Feedback</h4>
                 <div className="feedback-messages-list">
-                  {recent_feedback_messages.slice(0, 3).map((msg, index) => {
+                  {recent_feedback_messages.slice(0, 3).filter((msg, index) => !closedFeedback.includes(index)).map((msg, index) => {
                     // Try to detect if feedback mentions a specific assignment
                     const assignmentMatch = assignments_with_grades.find(item => 
                       msg.content.toLowerCase().includes(item.assignment.title.toLowerCase())
@@ -497,7 +513,12 @@ function StudentDashboard({ userId, onLogout }) {
                         <p className="feedback-content">{msg.content}</p>
                         {isResolved ? (
                           <div className="feedback-resolved">
-                            <span className="resolved-badge">✓ Resolved</span>
+                            <button 
+                              className="close-feedback-btn"
+                              onClick={() => closeFeedback(index)}
+                            >
+                              Close
+                            </button>
                           </div>
                         ) : (
                           <div className="feedback-actions">
@@ -536,6 +557,35 @@ function StudentDashboard({ userId, onLogout }) {
                     );
                   })}
                 </div>
+                
+                {/* Closed Feedback Section */}
+                {recent_feedback_messages.filter((msg, index) => closedFeedback.includes(index)).length > 0 && (
+                  <div className="closed-feedback-section">
+                    <button 
+                      className="expand-closed-button"
+                      onClick={() => setShowClosedFeedback(!showClosedFeedback)}
+                    >
+                      {showClosedFeedback ? '▼' : '▶'} Closed ({recent_feedback_messages.filter((msg, index) => closedFeedback.includes(index)).length})
+                    </button>
+                    
+                    {showClosedFeedback && (
+                      <div className="closed-feedback-list">
+                        {recent_feedback_messages.filter((msg, index) => closedFeedback.includes(index)).map((msg, origIndex) => (
+                          <div key={origIndex} className="feedback-message-item closed">
+                            <div className="feedback-header">
+                              <strong>{msg.teacher_name}</strong>
+                              <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <p className="feedback-content">{msg.content}</p>
+                            <div className="feedback-resolved">
+                              <span className="closed-badge">Closed</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
             )}
             
