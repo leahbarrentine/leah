@@ -271,6 +271,56 @@
   gap: var(--space-md);
 }
 
+.section-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.section-title.completed-section {
+  margin-top: var(--space-xl);
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-base);
+}
+
+.checklist-item.clickable {
+  cursor: pointer;
+}
+
+.checklist-item.clickable:hover {
+  background: var(--bg-tertiary);
+  transform: translateX(4px);
+}
+
+.checklist-item.completed {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.checkbox {
+  font-size: var(--font-size-xl);
+  color: black;
+  font-weight: bold;
+  user-select: none;
+}
+
+.checkbox.checked {
+  color: black;
+}
+
 .button-primary {
   padding: 12px 24px;
   background: var(--primary-blue);
@@ -542,6 +592,114 @@
 .empty-state-subtext {
   font-size: var(--font-size-base);
   color: var(--text-tertiary);
+}
+
+/* Assignments to Grade Section */
+.assignments-to-grade-section {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.assignments-to-grade-section h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xl);
+}
+
+.assignments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-lg);
+}
+
+.assignment-to-grade-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--warning-amber);
+  transition: all var(--transition-base);
+}
+
+.assignment-to-grade-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.assignment-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: var(--space-md);
+  gap: var(--space-sm);
+}
+
+.assignment-header-section h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.student-name-badge {
+  background: var(--primary-blue);
+  color: white;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.assignment-details-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.detail-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.status-pending {
+  color: var(--warning-amber);
+  font-weight: var(--font-weight-semibold);
+}
+
+.grade-button {
+  width: 100%;
+  padding: 12px 24px;
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.grade-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
 }
 
 .loading, .error {

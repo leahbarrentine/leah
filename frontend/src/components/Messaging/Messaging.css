@@ -168,7 +168,20 @@
   border-bottom-right-radius: 4px;
 }
 
+.message-sender {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-xs);
+  opacity: 0.8;
+}
+
 .message-content {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  word-wrap: break-word;
+}
+
+.message-content-text {
   font-size: var(--font-size-base);
   line-height: var(--line-height-relaxed);
   word-wrap: break-word;
@@ -177,7 +190,8 @@
 .message-time {
   font-size: var(--font-size-xs);
   margin-top: var(--space-xs);
-  opacity: 0.7;
+  opacity: 0.6;
+  font-style: italic;
 }
 
 .message-input-container {

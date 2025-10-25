@@ -74,6 +74,8 @@ function StudentDashboard({ userId, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [assignmentFilter, setAssignmentFilter] = useState('upcoming'); // 'upcoming', 'all'
+  const [assignmentSort, setAssignmentSort] = useState('dueDate'); // 'dueDate'
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -300,9 +302,41 @@ function StudentDashboard({ userId, onLogout }) {
         <div className="dashboard-card">
           <div className="card-header">
             <h2>All Assignments</h2>
+            <div className="assignment-controls">
+              <select 
+                className="filter-select"
+                value={assignmentFilter} 
+                onChange={(e) => setAssignmentFilter(e.target.value)}
+              >
+                <option value="upcoming">Show Upcoming Only</option>
+                <option value="all">Show All</option>
+              </select>
+              <select 
+                className="sort-select"
+                value={assignmentSort} 
+                onChange={(e) => setAssignmentSort(e.target.value)}
+              >
+                <option value="dueDate">Sort by Due Date</option>
+              </select>
+            </div>
           </div>
           <div className="assignments-list">
-            {assignments_with_grades.map(item => {
+            {assignments_with_grades
+              .filter(item => {
+                if (assignmentFilter === 'upcoming') {
+                  const dueDate = new Date(item.assignment.due_date);
+                  const today = new Date();
+                  return dueDate >= today || !item.grade || item.grade.completion_status !== 'completed';
+                }
+                return true;
+              })
+              .sort((a, b) => {
+                if (assignmentSort === 'dueDate') {
+                  return new Date(a.assignment.due_date) - new Date(b.assignment.due_date);
+                }
+                return 0;
+              })
+              .map(item => {
               const score = item.grade?.score;
               const performanceClass = getPerformanceClass(score);
               const scoreClass = getScoreClass(score);

@@ -8,7 +8,7 @@ import './TeacherDashboard.css';
 function TeacherDashboard({ userId, onLogout }) {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('at-risk');
+  const [activeTab, setActiveTab] = useState('overview');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentPerformance, setStudentPerformance] = useState({});
   const [completedGradingTasks, setCompletedGradingTasks] = useState([]);
@@ -105,7 +105,7 @@ function TeacherDashboard({ userId, onLogout }) {
           <p>Monitor student progress and provide support</p>
         </div>
 
-      {activeTab === 'at-risk' && (
+      {activeTab === 'overview' && (
         <>
           {/* Teacher Grading Plan */}
           {gradingTasks.length > 0 && (
@@ -271,25 +271,47 @@ function TeacherDashboard({ userId, onLogout }) {
         </>
       )}
 
-      {activeTab === 'classes' && (
-        <div className="dashboard-grid">
-          <div className="classes-grid">
-            {classes.map(({ class: cls, student_count, assignment_count }) => (
-              <div key={cls.id} className="card class-card">
-                <h3>{cls.name}</h3>
-                <p className="class-subject">{cls.subject}</p>
-                <div className="class-stats">
-                  <div className="stat">
-                    <span className="stat-label">Students:</span>
-                    <span className="stat-value">{student_count}</span>
-                  </div>
-                  <div className="stat">
-                    <span className="stat-label">Assignments:</span>
-                    <span className="stat-value">{assignment_count}</span>
-                  </div>
-                </div>
+      {activeTab === 'assignments' && (
+        <div className="assignments-to-grade-section">
+          <h2>Assignments to Grade</h2>
+          <div className="assignments-grid">
+            {at_risk_students.flatMap(({ student, prediction }) => 
+              prediction.at_risk_subjects
+                .filter(subject => !subject.grade || subject.grade === null)
+                .map((subject, idx) => ({
+                  student,
+                  subject,
+                  key: `${student.id}-${idx}`
+                }))
+            ).length === 0 ? (
+              <div className="empty-state">
+                <p>All assignments are graded! Great work!</p>
               </div>
-            ))}
+            ) : (
+              at_risk_students.flatMap(({ student, prediction }) => 
+                prediction.at_risk_subjects
+                  .filter(subject => !subject.grade || subject.grade === null)
+                  .map((subject, idx) => (
+                    <div key={`${student.id}-${idx}`} className="assignment-to-grade-card">
+                      <div className="assignment-header-section">
+                        <h3>{subject.assignment}</h3>
+                        <span className="student-name-badge">{student.name}</span>
+                      </div>
+                      <div className="assignment-details-section">
+                        <div className="detail-item">
+                          <span className="detail-label">Student:</span>
+                          <span className="detail-value">{student.email}</span>
+                        </div>
+                        <div className="detail-item">
+                          <span className="detail-label">Status:</span>
+                          <span className="detail-value status-pending">Needs Grading</span>
+                        </div>
+                      </div>
+                      <button className="grade-button">Grade Assignment</button>
+                    </div>
+                  ))
+              )
+            )}
           </div>
         </div>
       )}

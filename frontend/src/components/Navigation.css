@@ -1,16 +1,21 @@
 /* Import design system */
 @import '../styles/design-system.css';
 
-.navigation-toolbar {
+.navigation-wrapper {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: linear-gradient(135deg, #0071e3 0%, #00c6ff 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: var(--space-md) var(--space-xl);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navigation-top-bar {
+  background: #003d82;
+  padding: var(--space-md) var(--space-xl);
+}
+
+.navigation-lower-bar {
+  background: #4A90E2;
+  padding: var(--space-sm) var(--space-xl);
 }
 
 .nav-container {

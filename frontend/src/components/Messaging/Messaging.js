@@ -186,17 +186,25 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
             </div>
 
             <div className="messages-list">
-              {selectedConversation?.messages?.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`message ${msg.sender_id === userId && msg.sender_type === userType ? 'sent' : 'received'}`}
-                >
-                  <div className="message-content-text">{msg.content}</div>
-                  <div className="message-time">
-                    {new Date(msg.created_at).toLocaleString()}
+              {selectedConversation?.messages?.map((msg) => {
+                const isSent = msg.sender_id === userId && msg.sender_type === userType;
+                const senderName = isSent ? 'You' : selectedRecipient?.name || 'Unknown';
+                
+                return (
+                  <div
+                    key={msg.id}
+                    className={`message ${isSent ? 'sent' : 'received'}`}
+                  >
+                    <div className="message-bubble">
+                      <div className="message-sender">{senderName}</div>
+                      <div className="message-content-text">{msg.content}</div>
+                      <div className="message-time">
+                        {new Date(msg.created_at).toLocaleString()}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="message-input-container">

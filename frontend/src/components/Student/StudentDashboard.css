@@ -95,13 +95,13 @@
 
 .checkbox {
   font-size: var(--font-size-xl);
-  color: var(--success-green);
+  color: black;
   font-weight: bold;
   user-select: none;
 }
 
 .checkbox.checked {
-  color: var(--success-green);
+  color: black;
 }
 
 /* Improvement Card */
@@ -233,12 +233,46 @@
   margin-bottom: var(--space-lg);
   padding-bottom: var(--space-md);
   border-bottom: 1px solid var(--neutral-100);
+  flex-wrap: wrap;
+  gap: var(--space-md);
 }
 
 .card-header h2 {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
+}
+
+.assignment-controls {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.filter-select,
+.sort-select {
+  padding: 8px 16px;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
+}
+
+.filter-select:hover,
+.sort-select:hover {
+  border-color: var(--primary-blue);
+}
+
+.filter-select:focus,
+.sort-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
 }
 
 .risk-card {
@@ -372,7 +406,7 @@
 .assignment-title {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
-  color: #E57373;
+  color: black;
   margin-bottom: 4px;
 }
 
