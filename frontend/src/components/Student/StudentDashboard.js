@@ -973,7 +973,7 @@ function StudentDashboard({ userId, onLogout }) {
               </div>
               <div className="modal-actions">
                 <button 
-                  className="modal-btn primary-btn"
+                  className="button button-primary"
                   onClick={() => {
                     markFeedbackAsResolved(feedbackModal.index);
                     setFeedbackModal(null);
