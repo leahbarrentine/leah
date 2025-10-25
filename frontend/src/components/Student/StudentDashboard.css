@@ -355,6 +355,7 @@
   display: flex;
   gap: var(--spacing-3);
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .subject-filter-select {
@@ -368,8 +369,6 @@
 
 .subject-filter-select:hover {
   border-color: var(--primary-blue);
-}
-  align-items: center;
 }
 
 .filter-select,
