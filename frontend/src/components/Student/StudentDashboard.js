@@ -581,7 +581,7 @@ function StudentDashboard({ userId, onLogout }) {
                                 </button>
                               ) : (
                                 <button 
-                                  className="close-feedback-btn"
+                                  className="feedback-action-btn see-more-btn"
                                   onClick={() => closeFeedback(origIndex)}
                                 >
                                   Close
@@ -943,13 +943,31 @@ function StudentDashboard({ userId, onLogout }) {
         </div>
       )}
 
-      {activeTab === 'messages' && (
-        <Messaging 
-          userId={userId} 
-          userType="student"
-          onMessagesRead={loadConversations}
-        />
-      )}
+      {activeTab === 'messages' && (() => {
+        // Check for pre-selected teacher from sessionStorage
+        const savedTeacher = sessionStorage.getItem('preSelectedTeacher');
+        let preSelectedRecipient = null;
+        
+        if (savedTeacher) {
+          const teacher = JSON.parse(savedTeacher);
+          preSelectedRecipient = {
+            id: teacher.id,
+            type: 'teacher',
+            name: teacher.name
+          };
+          // Clear it after reading
+          sessionStorage.removeItem('preSelectedTeacher');
+        }
+        
+        return (
+          <Messaging 
+            userId={userId} 
+            userType="student"
+            onMessagesRead={loadConversations}
+            preSelectedRecipient={preSelectedRecipient}
+          />
+        );
+      })()}
 
       {activeTab === 'tips' && (
         <Tips />
