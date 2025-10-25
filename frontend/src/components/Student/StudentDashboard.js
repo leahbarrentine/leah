@@ -546,7 +546,18 @@ function StudentDashboard({ userId, onLogout }) {
                     )}
                   </div>
                   <div className="assignment-meta">
-                    <span>Due: {new Date(item.assignment.due_date).toLocaleDateString()}</span>
+                    {(() => {
+                      const dueDate = new Date(item.assignment.due_date);
+                      const today = new Date();
+                      const isOverdue = dueDate < today && status !== 'graded' && status !== 'submitted';
+                      
+                      return (
+                        <span className={isOverdue ? 'overdue-date' : ''}>
+                          {isOverdue ? 'Overdue: ' : 'Due: '}
+                          {dueDate.toLocaleDateString()}
+                        </span>
+                      );
+                    })()}
                     <span>Status: {
                       status === 'graded' ? 'Graded' :
                       status === 'submitted' ? 'Submitted' :

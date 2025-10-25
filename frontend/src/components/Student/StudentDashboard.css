@@ -962,6 +962,12 @@
   border-color: var(--neutral-400);
 }
 
+/* Overdue date styling */
+.overdue-date {
+  color: var(--alert-coral);
+  font-weight: var(--font-weight-bold);
+}
+
 .challenging-assignment-card.subject-border-art,
 .challenging-assignment-card.subject-border-music {
   border-left-color: #9f1239;
