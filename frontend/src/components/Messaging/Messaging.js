@@ -158,6 +158,11 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
             ) : (
               conversations.map((conv, idx) => {
                 const partner = recipientList.find(r => r.id === conv.partner_id);
+                // Calculate unread count for INCOMING messages only
+                const incomingUnreadCount = conv.messages.filter(m => 
+                  !m.read && m.recipient_id === userId && m.recipient_type === userType
+                ).length;
+                
                 return (
                   <div
                     key={idx}
@@ -170,8 +175,8 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
                         {conv.messages[0]?.content.substring(0, 40)}...
                       </span>
                     </div>
-                    {conv.unread_count > 0 && (
-                      <div className="unread-badge">{conv.unread_count}</div>
+                    {incomingUnreadCount > 0 && (
+                      <div className="unread-badge">{incomingUnreadCount}</div>
                     )}
                   </div>
                 );
