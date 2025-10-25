@@ -528,7 +528,7 @@ function StudentDashboard({ userId, onLogout }) {
                           </div>
                           <p className="feedback-content">{msg.content}</p>
                           <div className="feedback-actions-row">
-                            {!isResolved && (
+                            {!isResolved ? (
                               <div className="feedback-actions">
                                 <button 
                                   className="feedback-action-btn see-more-btn"
@@ -560,13 +560,14 @@ function StudentDashboard({ userId, onLogout }) {
                                   Take Action
                                 </button>
                               </div>
+                            ) : (
+                              <button 
+                                className="close-feedback-btn"
+                                onClick={() => closeFeedback(origIndex)}
+                              >
+                                Close
+                              </button>
                             )}
-                            <button 
-                              className="close-feedback-btn"
-                              onClick={() => closeFeedback(origIndex)}
-                            >
-                              Close
-                            </button>
                           </div>
                         </div>
                       );

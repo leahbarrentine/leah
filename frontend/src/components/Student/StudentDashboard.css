@@ -359,13 +359,13 @@
 }
 
 .see-more-btn {
-  background: var(--neutral-100);
-  color: var(--text-primary);
+  background: var(--neutral-200);
+  color: black;
   border: 1px solid var(--neutral-300);
 }
 
 .see-more-btn:hover {
-  background: var(--neutral-200);
+  background: var(--neutral-300);
 }
 
 .take-action-btn {
