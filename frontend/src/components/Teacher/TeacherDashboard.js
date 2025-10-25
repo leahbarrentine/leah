@@ -76,6 +76,30 @@ function TeacherDashboard({ userId, onLogout }) {
     }
   };
 
+  // Helper function to calculate risk level for a student based on performance
+  const calculateRiskLevel = (studentId) => {
+    const perfData = allStudentsPerformance[studentId];
+    if (!perfData || perfData.length === 0) return 'unknown';
+    
+    const latestPerf = perfData[perfData.length - 1];
+    const avgGrade = latestPerf.avg_grade || 0;
+    const completionRate = latestPerf.completion_rate || 0;
+    
+    // Check if student is in at_risk_students list
+    const atRiskStudent = dashboard?.at_risk_students?.find(
+      ({ student }) => student.id === studentId
+    );
+    
+    if (atRiskStudent) {
+      return atRiskStudent.prediction.risk_level;
+    }
+    
+    // Calculate risk level based on performance metrics
+    if (avgGrade < 60 || completionRate < 0.6) return 'high';
+    if (avgGrade < 75 || completionRate < 0.8) return 'medium';
+    return 'low';
+  };
+
   const handleSendFeedback = async () => {
     if (!feedbackModal) return;
     
@@ -690,13 +714,20 @@ function TeacherDashboard({ userId, onLogout }) {
             </div>
           ) : (
             <div className="performance-grid">
-              {allStudents.map(student => (
+              {allStudents.map(student => {
+                const riskLevel = calculateRiskLevel(student.id);
+                return (
                 <div key={student.id} className="performance-card">
                   <div className="student-header">
                     <div className="student-info-section">
                       <h3 className="student-name">{student.name}</h3>
                       <p className="student-email">{student.email}</p>
                     </div>
+                    {riskLevel !== 'unknown' && (
+                      <span className={`risk-badge ${riskLevel}`}>
+                        {riskLevel} risk
+                      </span>
+                    )}
                   </div>
                   
                   {allStudentsPerformance[student.id] && allStudentsPerformance[student.id].length > 0 ? (
@@ -731,7 +762,8 @@ function TeacherDashboard({ userId, onLogout }) {
                     </div>
                   )}
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>
