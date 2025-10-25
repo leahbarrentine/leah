@@ -115,7 +115,7 @@ function StudentDashboard({ userId, onLogout }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [completedTasks, setCompletedTasks] = useState([]);
   const [assignmentFilter, setAssignmentFilter] = useState('upcoming'); // 'upcoming', 'all'
-  const [assignmentSort, setAssignmentSort] = useState('dueDate'); // 'dueDate'
+  const [assignmentSort, setAssignmentSort] = useState('dueDate'); // 'dueDate', 'subject'
   const [todoSort, setTodoSort] = useState('dueDate'); // 'dueDate'
   const [quoteKey, setQuoteKey] = useState(0); // For forcing quote regeneration
   const [workingAssignment, setWorkingAssignment] = useState(null); // Assignment being worked on
@@ -498,6 +498,7 @@ function StudentDashboard({ userId, onLogout }) {
                 onChange={(e) => setAssignmentSort(e.target.value)}
               >
                 <option value="dueDate">Sort by Due Date</option>
+                <option value="subject">Sort by Subject</option>
               </select>
             </div>
           </div>
@@ -507,13 +508,18 @@ function StudentDashboard({ userId, onLogout }) {
                 if (assignmentFilter === 'upcoming') {
                   const dueDate = new Date(item.assignment.due_date);
                   const today = new Date();
-                  return dueDate >= today || !item.grade || item.grade.completion_status !== 'completed';
+                  const submissionStatus = submissionStatuses[item.assignment.id];
+                  const status = submissionStatus?.status || 'not_started';
+                  // Exclude graded assignments and past due completed assignments
+                  return (dueDate >= today || status === 'not_started' || status === 'in_progress') && status !== 'graded';
                 }
                 return true;
               })
               .sort((a, b) => {
                 if (assignmentSort === 'dueDate') {
                   return new Date(a.assignment.due_date) - new Date(b.assignment.due_date);
+                } else if (assignmentSort === 'subject') {
+                  return a.assignment.subject.localeCompare(b.assignment.subject);
                 }
                 return 0;
               })
