@@ -789,7 +789,11 @@ function TeacherDashboard({ userId, onLogout }) {
       )}
 
       {activeTab === 'messages' && (
-        <Messaging userId={userId} userType="teacher" />
+        <Messaging 
+          userId={userId} 
+          userType="teacher"
+          onMessagesRead={loadConversations}
+        />
       )}
 
       {activeTab === 'performance' && (

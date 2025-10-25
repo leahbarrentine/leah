@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { messageAPI, generalAPI } from '../../api';
 import './Messaging.css';
 
-function Messaging({ userId, userType, preSelectedRecipient, initialMessage, directChatOnly = false }) {
+function Messaging({ userId, userType, preSelectedRecipient, initialMessage, directChatOnly = false, onMessagesRead }) {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [newMessage, setNewMessage] = useState(initialMessage || '');
@@ -121,6 +121,11 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
         console.error('Error marking message as read:', error);
       }
     }
+    
+    // Notify parent component to update badge count
+    if (unreadMessages.length > 0 && onMessagesRead) {
+      onMessagesRead();
+    }
   };
 
   const startNewConversation = () => {
@@ -186,7 +191,7 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
                     <div className="conversation-info">
                       <strong>{partner?.name || 'Unknown'}</strong>
                       <span className="message-preview">
-                        {conv.messages[0]?.content.substring(0, 40)}...
+                        {conv.messages[conv.messages.length - 1]?.content.substring(0, 40)}...
                       </span>
                     </div>
                     {incomingUnreadCount > 0 && (

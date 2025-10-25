@@ -944,7 +944,11 @@ function StudentDashboard({ userId, onLogout }) {
       )}
 
       {activeTab === 'messages' && (
-        <Messaging userId={userId} userType="student" />
+        <Messaging 
+          userId={userId} 
+          userType="student"
+          onMessagesRead={loadConversations}
+        />
       )}
 
       {activeTab === 'tips' && (
