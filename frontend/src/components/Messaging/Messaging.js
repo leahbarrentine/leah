@@ -186,7 +186,9 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage }) {
             </div>
 
             <div className="messages-list">
-              {selectedConversation?.messages?.map((msg) => {
+              {selectedConversation?.messages
+                ?.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+                .map((msg) => {
                 const isSent = msg.sender_id === userId && msg.sender_type === userType;
                 const senderName = isSent ? 'You' : selectedRecipient?.name || 'Unknown';
                 

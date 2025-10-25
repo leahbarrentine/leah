@@ -212,6 +212,22 @@
   margin: 0 auto;
 }
 
+.quote-alert-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+.quote-alert-row .motivational-card {
+  grid-column: auto;
+}
+
+.quote-alert-row .alert {
+  border-radius: var(--radius-lg);
+}
+
 .dashboard-card {
   background: var(--white);
   border-radius: var(--radius-lg);
@@ -541,6 +557,10 @@
   }
   
   .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quote-alert-row {
     grid-template-columns: 1fr;
   }
   

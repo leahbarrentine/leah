@@ -107,6 +107,59 @@
   animation: bounce 3.5s ease-in-out infinite 0.5s;
 }
 
+/* Space emojis with floating animation */
+.space-emoji {
+  position: absolute;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.saturn {
+  top: 15%;
+  right: 25%;
+  font-size: 45px;
+  animation: floatSlow 25s ease-in-out infinite;
+}
+
+.rocket {
+  bottom: 35%;
+  right: 15%;
+  font-size: 40px;
+  animation: floatDiagonal 20s ease-in-out infinite;
+}
+
+.sparkles-1 {
+  top: 40%;
+  left: 12%;
+  font-size: 35px;
+  animation: floatGentle 18s ease-in-out infinite 2s;
+}
+
+.sparkles-2 {
+  top: 70%;
+  right: 10%;
+  font-size: 30px;
+  animation: floatGentle 22s ease-in-out infinite 5s;
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-15px, 10px) rotate(5deg); }
+  50% { transform: translate(-10px, -15px) rotate(-3deg); }
+  75% { transform: translate(10px, -5px) rotate(2deg); }
+}
+
+@keyframes floatDiagonal {
+  0%, 100% { transform: translate(0, 0) rotate(-10deg); }
+  33% { transform: translate(20px, -20px) rotate(-15deg); }
+  66% { transform: translate(-15px, 15px) rotate(-5deg); }
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  50% { transform: translate(-10px, -10px) scale(1.1); opacity: 0.8; }
+}
+
 .login-card {
   background: var(--glass-bg);
   backdrop-filter: blur(30px);

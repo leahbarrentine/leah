@@ -259,10 +259,51 @@
   margin-bottom: var(--space-xl);
 }
 
+.grading-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
 .grading-plan-card h3 {
   color: var(--text-primary);
   font-size: var(--font-size-xl);
-  margin-bottom: var(--space-lg);
+  margin: 0;
+}
+
+.task-controls {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.task-filter-select,
+.task-sort-select {
+  padding: 8px 16px;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family);
+}
+
+.task-filter-select:hover,
+.task-sort-select:hover {
+  border-color: var(--primary-blue);
+}
+
+.task-filter-select:focus,
+.task-sort-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
 }
 
 .grading-checklist {
@@ -287,7 +328,7 @@
 
 .checklist-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-sm);
   padding: var(--space-md);
   background: var(--bg-secondary);
@@ -307,7 +348,57 @@
 
 .checklist-item.completed {
   opacity: 0.7;
+}
+
+.checklist-item.completed .task-text {
   text-decoration: line-through;
+}
+
+.task-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.task-text {
+  flex: 1;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-left: calc(var(--font-size-xl) + var(--space-sm));
+}
+
+.task-category {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+}
+
+.task-category.grading {
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--primary-blue);
+}
+
+.task-category.messages {
+  background: rgba(156, 39, 176, 0.1);
+  color: var(--accent-purple);
+}
+
+.task-category.scheduling {
+  background: rgba(255, 149, 0, 0.1);
+  color: var(--warning-amber);
+}
+
+.task-deadline {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
 .checkbox {
@@ -315,6 +406,7 @@
   color: black;
   font-weight: bold;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .checkbox.checked {

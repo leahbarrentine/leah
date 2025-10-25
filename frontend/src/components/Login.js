@@ -54,6 +54,12 @@ function Login({ onLogin }) {
       <span className="doodle doodle-smile-1">😊</span>
       <span className="doodle doodle-smile-2">🌟</span>
       
+      {/* Space emojis */}
+      <span className="doodle space-emoji saturn">🪐</span>
+      <span className="doodle space-emoji rocket">🚀</span>
+      <span className="doodle space-emoji sparkles-1">✨</span>
+      <span className="doodle space-emoji sparkles-2">✨</span>
+      
       <div className="login-card">
         <h2>2 Steps Ahead</h2>
         <p className="login-subtitle">Select your account to continue</p>

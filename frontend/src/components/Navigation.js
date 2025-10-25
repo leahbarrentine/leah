@@ -1,13 +1,19 @@
 import React from 'react';
 import './Navigation.css';
 
-function Navigation({ activeTab, onTabChange, onLogout, userType }) {
+function Navigation({ activeTab, onTabChange, onLogout, userType, userName }) {
   return (
     <nav className="navigation-wrapper">
       {/* Top bar - Dark blue with branding */}
       <div className="navigation-top-bar">
         <div className="nav-container">
           <div className="nav-brand">2 Steps Ahead</div>
+          <div className="nav-user-section">
+            <span className="user-name">{userName}</span>
+            <button className="nav-logout-button" onClick={onLogout}>
+              Logout
+            </button>
+          </div>
         </div>
       </div>
       
@@ -32,9 +38,6 @@ function Navigation({ activeTab, onTabChange, onLogout, userType }) {
               onClick={() => onTabChange('messages')}
             >
               Messages
-            </button>
-            <button className="nav-bubble logout" onClick={onLogout}>
-              Logout
             </button>
           </div>
         </div>

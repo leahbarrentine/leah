@@ -163,27 +163,30 @@ function StudentDashboard({ userId, onLogout }) {
         onTabChange={setActiveTab} 
         onLogout={onLogout}
         userType="student"
+        userName={student.name}
       />
       <div className="student-dashboard">
 
       {activeTab === 'overview' && (
         <div className="dashboard-grid">
 
-          {/* Motivational Quote */}
-          <div className="motivational-card">
-            <div className="quote-icon">💡</div>
-            <p className="quote-text">{motivationalQuote}</p>
-          </div>
-
-          {/* Risk Alert */}
-          {riskLevel !== 'low' && (
-            <div className={`alert alert-${riskLevel === 'high' ? 'danger' : 'warning'}`}>
-              <strong>Performance Alert:</strong> {riskLevel === 'high' ? 'Your performance has declined significantly.' : 'Your performance shows some decline.'}
-              {prediction.declining && (
-                <span> Your grades have decreased by {(prediction.decline_percentage * 100).toFixed(1)}% this week.</span>
-              )}
+          {/* Motivational Quote and Performance Alert Row */}
+          <div className="quote-alert-row">
+            <div className="motivational-card">
+              <div className="quote-icon">💡</div>
+              <p className="quote-text">{motivationalQuote}</p>
             </div>
-          )}
+
+            {/* Risk Alert */}
+            {riskLevel !== 'low' && (
+              <div className={`alert alert-${riskLevel === 'high' ? 'danger' : 'warning'}`}>
+                <strong>Performance Alert:</strong> {riskLevel === 'high' ? 'Your performance has declined significantly.' : 'Your performance shows some decline.'}
+                {prediction.declining && (
+                  <span> Your grades have decreased by {(prediction.decline_percentage * 100).toFixed(1)}% this week.</span>
+                )}
+              </div>
+            )}
+          </div>
           
           {/* Study Plan */}
           {studyPlan.length > 0 && (
