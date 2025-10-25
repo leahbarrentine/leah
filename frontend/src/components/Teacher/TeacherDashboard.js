@@ -189,7 +189,7 @@ function TeacherDashboard({ userId, onLogout }) {
 
   const { teacher, at_risk_students, classes } = dashboard;
   
-  // Calculate risk level counts
+  // Calculate risk level counts for ALL students
   const riskCounts = {
     high: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'high').length,
     medium: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'medium').length,
@@ -202,6 +202,9 @@ function TeacherDashboard({ userId, onLogout }) {
     medium: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'medium'),
     low: at_risk_students.filter(({ prediction }) => prediction.risk_level === 'low')
   };
+  
+  // Total student count
+  const totalStudents = at_risk_students.length;
   
   // Generate grading plan tasks with categories and deadlines
   const gradingTasks = [];
@@ -333,7 +336,7 @@ function TeacherDashboard({ userId, onLogout }) {
                 <>
                   <h4 className="section-title">To Do</h4>
                   <div className="grading-checklist">
-                    {pendingGradingTasks.slice(0, showAllTasks ? pendingGradingTasks.length : 3).map((task, idx) => (
+                    {pendingGradingTasks.slice(0, 3).map((task, idx) => (
                       <div 
                         key={idx} 
                         className="checklist-item clickable"
@@ -354,14 +357,6 @@ function TeacherDashboard({ userId, onLogout }) {
                       </div>
                     ))}
                   </div>
-                  {pendingGradingTasks.length > 3 && (
-                    <button 
-                      className="expand-button"
-                      onClick={() => setShowAllTasks(!showAllTasks)}
-                    >
-                      {showAllTasks ? 'Show Less' : `Show ${pendingGradingTasks.length - 3} More`}
-                    </button>
-                  )}
                 </>
               )}
               
@@ -403,10 +398,10 @@ function TeacherDashboard({ userId, onLogout }) {
             </div>
           )}
         
-          {/* Risk Level Summary */}
-          {at_risk_students && at_risk_students.length > 0 && (
+          {/* Risk Level Summary - Always show if there are students */}
+          {totalStudents > 0 && (
             <div className="risk-summary-section">
-              <h3>At-Risk Students Summary</h3>
+              <h3>Student Overview</h3>
               <div className="risk-counters">
                 <div 
                   className="risk-counter high-risk-counter"
@@ -442,10 +437,10 @@ function TeacherDashboard({ userId, onLogout }) {
             </div>
           )}
         
-          {!at_risk_students || at_risk_students.length === 0 ? (
+          {totalStudents === 0 ? (
             <div className="card">
               <p className="no-data">
-                Great news! No students are currently at risk.
+                No students found in your classes.
               </p>
             </div>
           ) : (
