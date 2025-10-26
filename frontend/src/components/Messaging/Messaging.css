@@ -447,6 +447,8 @@
   overflow-y: auto;
   padding: var(--space-lg);
   background: var(--neutral-50);
+  max-height: calc(100vh - 400px);
+  min-height: 300px;
 }
 
 .messaging-container {

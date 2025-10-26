@@ -17,24 +17,36 @@ function Messaging({ userId, userType, preSelectedRecipient, initialMessage, dir
   }, [userId, userType]);
 
   useEffect(() => {
-    if (preSelectedRecipient && conversations.length > 0) {
+    if (preSelectedRecipient) {
       setSelectedRecipient(preSelectedRecipient);
-      // Find or create conversation with this recipient
-      const conv = conversations.find(c => 
-        c.partner_id === preSelectedRecipient.id && 
-        c.partner_type === preSelectedRecipient.type
-      );
       
-      if (conv) {
-        // Automatically select the existing conversation
-        selectConversation(conv);
+      if (conversations.length > 0) {
+        // Find or create conversation with this recipient
+        const conv = conversations.find(c => 
+          c.partner_id === preSelectedRecipient.id && 
+          c.partner_type === preSelectedRecipient.type
+        );
+        
+        if (conv) {
+          // Automatically select the existing conversation
+          selectConversation(conv);
+        } else {
+          // Create new conversation if none exists - they haven't messaged yet
+          setSelectedConversation({
+            partner_id: preSelectedRecipient.id,
+            partner_type: preSelectedRecipient.type,
+            messages: []
+          });
+          setShowNewChatDropdown(false);
+        }
       } else {
-        // Create new conversation if none exists
+        // No conversations yet, create a new one
         setSelectedConversation({
           partner_id: preSelectedRecipient.id,
           partner_type: preSelectedRecipient.type,
           messages: []
         });
+        setShowNewChatDropdown(false);
       }
     }
   }, [preSelectedRecipient, conversations]);

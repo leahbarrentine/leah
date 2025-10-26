@@ -135,10 +135,16 @@ function StudentDashboard({ userId, onLogout }) {
     const saved = localStorage.getItem(`closedFeedback_${userId}`);
     return saved ? JSON.parse(saved) : [];
   });
+  const [permanentlyDismissedFeedback, setPermanentlyDismissedFeedback] = useState(() => {
+    // Load permanently dismissed feedback from localStorage
+    const saved = localStorage.getItem(`permanentlyDismissedFeedback_${userId}`);
+    return saved ? JSON.parse(saved) : [];
+  });
   const [showClosedFeedback, setShowClosedFeedback] = useState(false);
   const [expandedFeedback, setExpandedFeedback] = useState([]); // Track which feedback items are expanded
   const [feedbackModal, setFeedbackModal] = useState(null); // { feedback: msg, index: number }
   const [conversations, setConversations] = useState([]);
+  const [expandedClosedFeedback, setExpandedClosedFeedback] = useState([]); // Track which closed feedback is expanded
   
   // Helper function to get performance class
   const getPerformanceClass = (score) => {
@@ -187,6 +193,11 @@ function StudentDashboard({ userId, onLogout }) {
   useEffect(() => {
     localStorage.setItem(`closedFeedback_${userId}`, JSON.stringify(closedFeedback));
   }, [closedFeedback, userId]);
+  
+  // Save permanently dismissed feedback to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(`permanentlyDismissedFeedback_${userId}`, JSON.stringify(permanentlyDismissedFeedback));
+  }, [permanentlyDismissedFeedback, userId]);
   
   // Function to mark feedback as resolved
   const markFeedbackAsResolved = (feedbackIndex) => {
@@ -317,17 +328,21 @@ function StudentDashboard({ userId, onLogout }) {
     return <div className="container">Error loading dashboard</div>;
   }
 
-  const { student, prediction, upcoming_assignments, assignments_with_grades, recent_graded_assignments, recent_feedback_messages } = dashboard;
+  const { student, prediction, upcoming_assignments, assignments_with_grades, recent_graded_assignments, recent_teacher_feedback } = dashboard;
   const riskLevel = prediction.risk_level;
   
   // Extract unique subjects for filtering
   const uniqueSubjects = [...new Set(assignments_with_grades.map(item => item.assignment.subject))].sort();
   
-  // Calculate average grade and completion rate
-  const gradesWithScores = assignments_with_grades.filter(item => item.grade && item.grade.score !== null);
-  const avgGrade = gradesWithScores.length > 0 
-    ? gradesWithScores.reduce((sum, item) => sum + item.grade.score, 0) / gradesWithScores.length 
-    : 0;
+  // Calculate average grade and completion rate across all classes
+  // Use prediction data if available for more accurate cross-class performance
+  const avgGrade = prediction.current_performance?.avg_grade || 
+    (() => {
+      const gradesWithScores = assignments_with_grades.filter(item => item.grade && item.grade.score !== null);
+      return gradesWithScores.length > 0 
+        ? gradesWithScores.reduce((sum, item) => sum + item.grade.score, 0) / gradesWithScores.length 
+        : 0;
+    })();
   const completionRate = prediction.current_performance?.completion_rate || 0;
   
   // Identify poor performance assignments (below 75%)
@@ -528,21 +543,21 @@ function StudentDashboard({ userId, onLogout }) {
               </>
             )}
             
-            {/* Recent Teacher Feedback from Messages */}
-            {recent_feedback_messages && recent_feedback_messages.length > 0 && (
+            {/* Recent Teacher Feedback (Unified) */}
+            {recent_teacher_feedback && recent_teacher_feedback.length > 0 && (
               <>
                 <h4 className="subsection-title">Recent Teacher Feedback</h4>
-                {recent_feedback_messages.slice(0, 3).filter((msg, index) => !closedFeedback.includes(index)).length === 0 ? (
+                {recent_teacher_feedback.filter((feedback, index) => !closedFeedback.includes(index) && !permanentlyDismissedFeedback.includes(index)).length === 0 ? (
                   <p className="no-new-feedback">No new feedback for now</p>
                 ) : (
                   <div className="feedback-messages-list">
-                    {recent_feedback_messages.slice(0, 3).map((msg, origIndex) => {
-                      // Skip if closed
-                      if (closedFeedback.includes(origIndex)) return null;
+                    {recent_teacher_feedback.map((feedback, origIndex) => {
+                      // Skip if closed or permanently dismissed
+                      if (closedFeedback.includes(origIndex) || permanentlyDismissedFeedback.includes(origIndex)) return null;
                       
                       // Try to detect if feedback mentions a specific assignment
                       const assignmentMatch = assignments_with_grades.find(item => 
-                        msg.content.toLowerCase().includes(item.assignment.title.toLowerCase())
+                        feedback.content.toLowerCase().includes(item.assignment.title.toLowerCase())
                       );
                       
                       const isResolved = resolvedFeedback.includes(origIndex);
@@ -550,10 +565,18 @@ function StudentDashboard({ userId, onLogout }) {
                       return (
                         <div key={origIndex} className="feedback-message-item">
                           <div className="feedback-header">
-                            <strong>{msg.teacher_name}</strong>
-                            <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
+                            <div className="feedback-header-left">
+                              <strong>{feedback.teacher_name}</strong>
+                              <span className="feedback-date">{new Date(feedback.created_at).toLocaleDateString()}</span>
+                            </div>
                           </div>
-                          <p className="feedback-content">{msg.content}</p>
+                          <p className="feedback-content">{feedback.content}</p>
+                          {feedback.type === 'comment' && feedback.assignment_title && (
+                            <div className="feedback-assignment-info">
+                              <span className="assignment-label">Assignment:</span> {feedback.assignment_title}
+                              {feedback.grade_score && <span className="feedback-grade"> - Score: {feedback.grade_score}%</span>}
+                            </div>
+                          )}
                           <div className="feedback-actions-row">
                             <div className="feedback-actions">
                               <button 
@@ -562,8 +585,8 @@ function StudentDashboard({ userId, onLogout }) {
                                   setActiveTab('messages');
                                   // Store teacher info for Messaging component to use
                                   sessionStorage.setItem('preSelectedTeacher', JSON.stringify({
-                                    id: msg.teacher_id,
-                                    name: msg.teacher_name
+                                    id: feedback.teacher_id,
+                                    name: feedback.teacher_name
                                   }));
                                 }}
                               >
@@ -575,7 +598,7 @@ function StudentDashboard({ userId, onLogout }) {
                                   onClick={() => {
                                     // Check if feedback mentions a specific assignment
                                     const mentionedAssignment = assignments_with_grades.find(item => 
-                                      msg.content.includes(item.assignment.title)
+                                      feedback.content.includes(item.assignment.title)
                                     );
                                     
                                     if (mentionedAssignment) {
@@ -585,7 +608,7 @@ function StudentDashboard({ userId, onLogout }) {
                                       markFeedbackAsResolved(origIndex);
                                     } else {
                                       // Show acknowledgment modal for general feedback
-                                      setFeedbackModal({ feedback: msg, index: origIndex });
+                                      setFeedbackModal({ feedback: feedback, index: origIndex });
                                     }
                                   }}
                                 >
@@ -608,29 +631,63 @@ function StudentDashboard({ userId, onLogout }) {
                 )}
                 
                 {/* Closed Feedback Section */}
-                {recent_feedback_messages.filter((msg, index) => closedFeedback.includes(index)).length > 0 && (
+                {recent_teacher_feedback.filter((feedback, index) => closedFeedback.includes(index) && !permanentlyDismissedFeedback.includes(index)).length > 0 && (
                   <div className="closed-feedback-section">
                     <button 
                       className="expand-closed-button"
                       onClick={() => setShowClosedFeedback(!showClosedFeedback)}
                     >
-                      {showClosedFeedback ? '▼' : '▶'} Closed ({recent_feedback_messages.filter((msg, index) => closedFeedback.includes(index)).length})
+                      {showClosedFeedback ? '▼' : '▶'} Closed ({recent_teacher_feedback.filter((feedback, index) => closedFeedback.includes(index) && !permanentlyDismissedFeedback.includes(index)).length})
                     </button>
                     
                     {showClosedFeedback && (
                       <div className="closed-feedback-list">
-                        {recent_feedback_messages.filter((msg, index) => closedFeedback.includes(index)).map((msg, origIndex) => (
-                          <div key={origIndex} className="feedback-message-item closed">
-                            <div className="feedback-header">
-                              <strong>{msg.teacher_name}</strong>
-                              <span className="feedback-date">{new Date(msg.created_at).toLocaleDateString()}</span>
+                        {recent_teacher_feedback.filter((feedback, index) => closedFeedback.includes(index) && !permanentlyDismissedFeedback.includes(index)).map((feedback, closedIndex) => {
+                          // Find the original index in the full feedback array
+                          const origIndex = recent_teacher_feedback.findIndex(f => f === feedback);
+                          const isExpanded = expandedClosedFeedback.includes(origIndex);
+                          
+                          return (
+                            <div 
+                              key={origIndex} 
+                              className="feedback-message-item closed"
+                              onClick={() => {
+                                // Toggle expansion
+                                setExpandedClosedFeedback(prev => 
+                                  prev.includes(origIndex) 
+                                    ? prev.filter(i => i !== origIndex)
+                                    : [...prev, origIndex]
+                                );
+                              }}
+                            >
+                              <div className="feedback-header">
+                                <div className="feedback-header-left">
+                                  <strong>{feedback.teacher_name}</strong>
+                                  <span className="feedback-date">{new Date(feedback.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <button 
+                                  className="close-feedback-x"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Add to permanently dismissed feedback
+                                    setPermanentlyDismissedFeedback(prev => [...prev, origIndex]);
+                                  }}
+                                  title="Permanently remove this feedback"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                              {isExpanded && (
+                                <>
+                                  <p className="feedback-content">{feedback.content}</p>
+                                  <div className="feedback-resolved">
+                                    <span className="closed-badge">Closed</span>
+                                  </div>
+                                </>
+                              )}
                             </div>
-                            <p className="feedback-content">{msg.content}</p>
-                            <div className="feedback-resolved">
-                              <span className="closed-badge">Closed</span>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -639,7 +696,7 @@ function StudentDashboard({ userId, onLogout }) {
             )}
             
             {(!recent_graded_assignments || recent_graded_assignments.filter(item => item.grade.score < 75).length === 0) && 
-             (!recent_feedback_messages || recent_feedback_messages.length === 0) && (
+             (!recent_teacher_feedback || recent_teacher_feedback.length === 0) && (
               <p className="no-improvements">Great job! No areas for improvement at this time. Keep up the excellent work!</p>
             )}
           </div>
